@@ -3,9 +3,27 @@ import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
-# Autenticação com Google Sheets
+# Definir o escopo de acesso ao Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-credentials = ServiceAccountCredentials.from_json_keyfile_name("secrets.json", scope)
+
+# Carregar credenciais do Streamlit Cloud (do secrets.toml)
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(
+    {
+        "type": "service_account",
+        "project_id": st.secrets["gcp"]["project_id"],
+        "private_key_id": st.secrets["gcp"]["private_key_id"],
+        "private_key": st.secrets["gcp"]["private_key"],
+        "client_email": st.secrets["gcp"]["client_email"],
+        "client_id": st.secrets["gcp"]["client_id"],
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": st.secrets["gcp"]["client_x509_cert_url"]
+    },
+    scope
+)
+
+# Autenticação com o Google Sheets
 gc = gspread.authorize(credentials)
 
 # Abrir a planilha
