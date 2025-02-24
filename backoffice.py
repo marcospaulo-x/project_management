@@ -10,7 +10,7 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 credentials = ServiceAccountCredentials.from_json_keyfile_dict(
     {
         "type": "service_account",
-        "project_id": st.secrets["gcp"]["project_id"],
+        "project_id": st.secrets["gcp_service_account"]["project_id"],
         "private_key_id": st.secrets["gcp"]["private_key_id"],
         "private_key": st.secrets["gcp"]["private_key"],
         "client_email": st.secrets["gcp"]["client_email"],
