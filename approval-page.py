@@ -16,7 +16,7 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
 query_params = st.query_params
-hu_id = query_params.get("id", [])[0]  # Captura o primeiro valor da lista
+hu_id = query_params.get("id", [""]) # Captura o primeiro valor da lista
 
 # **⚠️ Adiciona um print detalhado do ID**
 st.write(f"ID capturado antes do ajuste: {hu_id}")
