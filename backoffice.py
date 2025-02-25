@@ -9,7 +9,7 @@ st.set_page_config(page_title="Backoffice - Acompanhamento de HUs", layout="cent
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 client = gspread.authorize(credentials)
-SHEET_NAME = "Gerenciamento de Aprovações de HU's"
+SHEET_NAME = "Gerenciamento de aprovações de HU's"
 spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 print(st.secrets)  # Verifique se os segredos estão sendo carregados corretamente
 spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
