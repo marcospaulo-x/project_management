@@ -15,11 +15,20 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
-query_params = st.query_params  # Substitui experimental_get_query_params
-hu_id = query_params.get("id", [""])[0].strip()  # Remove espaços desnecessários
+query_params = st.query_params
+hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 
-# **Debug: Exibir o ID capturado**
-st.write(f"ID capturado: {hu_id}")
+# **⚠️ Adiciona um print detalhado do ID**
+st.write(f"ID capturado antes do ajuste: {hu_id}")
+
+# **Garante que estamos pegando o ID completo**
+hu_id = str(hu_id).strip()  # Converte para string e remove espaços
+
+# **Debug: Exibir o ID final**
+st.write(f"ID capturado após ajuste: {hu_id}")
+
+# **Debug: Exibir a lista de IDs disponíveis na planilha**
+st.write("IDs disponíveis na planilha:", hus["ID_HU"].tolist())
 
 # **2️⃣ Carregar os dados da planilha**
 @st.cache_data
