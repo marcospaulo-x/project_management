@@ -18,6 +18,9 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 query_params = st.query_params  # Obtém parâmetros da URL
 hu_id = query_params.get("id", [""])[0]  # Obtém o ID da HU
 
+# **Debug: Exibir o ID capturado para verificação**
+st.write(f"ID capturado: {hu_id}")
+
 # **2️⃣ Carregar os dados da planilha**
 @st.cache_data
 def load_hus():
@@ -25,6 +28,9 @@ def load_hus():
     return pd.DataFrame(data)
 
 hus = load_hus()
+
+# **Debug: Exibir a lista completa de IDs para verificar se HU222 está presente**
+st.write("IDs disponíveis na planilha:", hus["ID_HU"].tolist())
 
 # **3️⃣ Buscar a HU correspondente**
 hu_data = hus[hus["ID_HU"] == hu_id]  # Filtra pelo ID da HU
