@@ -14,26 +14,28 @@ SHEET_NAME = "Controle de HU's"
 spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
-# **1️⃣ Capturar o ID da HU da URL corretamente**
-query_params = st.experimental_get_query_params()  # Obtém os parâmetros da URL corretamente
-hu_id = query_params.get("id", [""])[0].strip()  # Remove espaços em branco e caracteres indesejados
+# **1️⃣ Capturar o ID da HU da URL**
+query_params = st.query_params  # Substitui experimental_get_query_params
+hu_id = query_params.get("id", [""])[0].strip()  # Remove espaços desnecessários
 
-# **Debug: Exibir o ID capturado para verificação**
+# **Debug: Exibir o ID capturado**
 st.write(f"ID capturado: {hu_id}")
 
 # **2️⃣ Carregar os dados da planilha**
 @st.cache_data
 def load_hus():
     data = sheet.get_all_records()
-    return pd.DataFrame(data)
+    df = pd.DataFrame(data)
+    df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que todos os IDs sejam strings
+    return df
 
 hus = load_hus()
 
-# **Debug: Exibir a lista completa de IDs para verificar se HU222 está presente**
+# **Debug: Exibir a lista de IDs disponíveis na planilha**
 st.write("IDs disponíveis na planilha:", hus["ID_HU"].tolist())
 
 # **3️⃣ Buscar a HU correspondente**
-hu_data = hus[hus["ID_HU"].astype(str).str.strip() == hu_id]  # Corrigir possíveis inconsistências no ID_HU
+hu_data = hus[hus["ID_HU"] == hu_id]  # Agora deve funcionar corretamente
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
