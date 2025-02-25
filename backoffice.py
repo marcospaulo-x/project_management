@@ -11,14 +11,12 @@ credentials = Credentials.from_service_account_info(st.secrets["gcp_service_acco
 client = gspread.authorize(credentials)
 SHEET_NAME = "Controle de HU's"
 spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
-print(st.secrets)  # Verifique se os segredos estão sendo carregados corretamente
-spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
-# Definir URL do Streamlit Cloud (substitua pelo link do seu app)
-APP_URL = "https://project-management-backoffice.streamlit.app/"  # 🚨 Altere para o link real do seu app
+# URL correta para a página de aprovação
+APPROVAL_URL = "https://aprovacao-de-hus.streamlit.app/"
 
-# Função para carregar HUs
+# Função para carregar HUs da planilha
 def load_hus():
     data = sheet.get_all_records()
     return pd.DataFrame(data)
@@ -28,10 +26,10 @@ def save_hu(hu_id, titulo, link_confluence):
     hu_data = load_hus()
 
     # Gerar link de aprovação correto
-    link_aprovacao = f"{APP_URL}/approval-page?id={hu_id}"
+    link_aprovacao = f"{APPROVAL_URL}?id={hu_id}"  
 
     # Adicionar nova linha na planilha
-    sheet.append_row([hu_id, titulo, "Pendente", "Marcos", "", link_confluence, link_aprovacao])
+    sheet.append_row([hu_id, titulo, "Pendente", "", "", link_confluence, link_aprovacao])
 
     return link_aprovacao
 
@@ -56,7 +54,7 @@ st.write("## 📜 Histórias de Usuário Cadastradas")
 hus = load_hus()
 if not hus.empty:
     for _, hu in hus.iterrows():
-        st.write(f"**ID:** {hu['ID']}")
+        st.write(f"**ID:** {hu['ID_HU']}")  # Ajustado para a nomenclatura correta
         st.write(f"**Título:** {hu['Título']}")
         st.markdown(f"[🔗 Link Confluence]({hu['Link']})")
         st.markdown(f"[📝 Link para Aprovação]({hu['Link']})")  # Agora pega o link correto da planilha
