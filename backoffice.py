@@ -1,74 +1,63 @@
 import streamlit as st
 import pandas as pd
-import os
+import gspread
 from google.oauth2.service_account import Credentials
 
-def get_gcp_credentials():
-    return Credentials.from_service_account_info(
-        {
-            "type": "service_account",
-            "project_id": st.secrets["gcp"]["project_id"],
-            "private_key_id": st.secrets["gcp"]["private_key_id"],
-            "private_key": st.secrets["gcp"]["private_key"],
-            "client_email": st.secrets["gcp"]["client_email"],
-            "client_id": st.secrets["gcp"]["client_id"],
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": st.secrets["gcp"]["client_x509_cert_url"]
-        }
-    )
-
 st.set_page_config(page_title="Backoffice - Acompanhamento de HUs", layout="centered")
-CSV_FILE = "./hus.csv"
 
-# Função para carregar as HUs do arquivo CSV
+# Conectar ao Google Sheets
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+client = gspread.authorize(credentials)
+SHEET_NAME = "Gerenciamento de Aprovações de HU's"
+spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
+sheet = spreadsheet.worksheet(SHEET_NAME)
+
+# Definir URL do Streamlit Cloud (substitua pelo link do seu app)
+APP_URL = "https://seu-app-no-streamlit.streamlit.app"  # 🚨 Altere para o link real do seu app
+
+# Função para carregar HUs
 def load_hus():
-    if os.path.exists(CSV_FILE):
-        return pd.read_csv(CSV_FILE).to_dict(orient="records")
-    return []
+    data = sheet.get_all_records()
+    return pd.DataFrame(data)
 
-# Função para salvar as HUs no arquivo CSV
-def save_hus(hus):
-    pd.DataFrame(hus).to_csv(CSV_FILE, index=False)
+# Função para salvar nova HU na planilha
+def save_hu(hu_id, titulo, link_confluence):
+    hu_data = load_hus()
 
-# Carregar HUs ao iniciar
-st.session_state.hus = load_hus()
+    # Gerar link de aprovação correto
+    link_aprovacao = f"{APP_URL}/approval-page?id={hu_id}"
 
+    # Adicionar nova linha na planilha
+    sheet.append_row([hu_id, titulo, "Pendente", "Marcos", "", link_confluence, link_aprovacao])
+
+    return link_aprovacao
+
+# Interface do Backoffice
 st.title("📌 Acompanhamento de HUs e Aprovação")
 
-# Formulário para adicionar HUs
 with st.form("nova_hu"):
     hu_id = st.text_input("ID da HU")
-    descricao = st.text_area("Descrição da HU")
+    titulo = st.text_input("Título da HU")
     link_confluence = st.text_input("Link do Confluence")
     submit = st.form_submit_button("Adicionar HU")
 
     if submit:
-        if hu_id and descricao and link_confluence:
-            link_aprovacao = f"http://localhost:8502/?id={hu_id}"
-            nova_hu = {
-                "ID": hu_id,
-                "Descrição": descricao,
-                "Link Confluence": link_confluence,
-                "Link Aprovação": link_aprovacao,
-                "Status": "Pendente",
-                "Observação": ""
-            }
-            st.session_state.hus.append(nova_hu)
-            save_hus(st.session_state.hus)
-            st.success("✅ HU adicionada com sucesso!")
+        if hu_id and titulo and link_confluence:
+            link_aprovacao = save_hu(hu_id, titulo, link_confluence)
+            st.success(f"✅ HU adicionada com sucesso!\n[📝 Link para Aprovação]({link_aprovacao})")
         else:
             st.error("⚠️ Todos os campos são obrigatórios!")
 
 # Exibição das HUs cadastradas
 st.write("## 📜 Histórias de Usuário Cadastradas")
-if st.session_state.hus:
-    for hu in st.session_state.hus:
+hus = load_hus()
+if not hus.empty:
+    for _, hu in hus.iterrows():
         st.write(f"**ID:** {hu['ID']}")
-        st.write(f"**Descrição:** {hu['Descrição']}")
-        st.markdown(f"[🔗 Link Confluence]({hu['Link Confluence']})")
-        st.markdown(f"[📝 Link para Aprovação]({hu['Link Aprovação']})")
+        st.write(f"**Título:** {hu['Título']}")
+        st.markdown(f"[🔗 Link Confluence]({hu['Link']})")
+        st.markdown(f"[📝 Link para Aprovação]({hu['Link']})")  # Agora pega o link correto da planilha
         st.write(f"**Status:** {hu['Status']}")
         st.write("---")
 else:
