@@ -14,7 +14,7 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # Definir URL do Streamlit Cloud (substitua pelo link do seu app)
-APP_URL = "https://seu-app-no-streamlit.streamlit.app"  # 🚨 Altere para o link real do seu app
+APP_URL = "https://project-management-backoffice.streamlit.app/"  # 🚨 Altere para o link real do seu app
 
 # Função para carregar HUs
 def load_hus():
