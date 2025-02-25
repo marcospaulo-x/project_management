@@ -1,56 +1,75 @@
 import streamlit as st
-import gspread
 import pandas as pd
-from oauth2client.service_account import ServiceAccountCredentials
+import os
+from google.oauth2.service_account import Credentials
 
-# Definir o escopo de acesso ao Google Sheets
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+def get_gcp_credentials():
+    return Credentials.from_service_account_info(
+        {
+            "type": "service_account",
+            "project_id": st.secrets["gcp"]["project_id"],
+            "private_key_id": st.secrets["gcp"]["private_key_id"],
+            "private_key": st.secrets["gcp"]["private_key"],
+            "client_email": st.secrets["gcp"]["client_email"],
+            "client_id": st.secrets["gcp"]["client_id"],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": st.secrets["gcp"]["client_x509_cert_url"]
+        }
+    )
 
-# Carregar credenciais do Streamlit Cloud (do secrets.toml)
-credentials = ServiceAccountCredentials.from_json_keyfile_dict(
-    {
-        "type": "service_account",
-        "project_id": st.secrets["gcp_service_account"]["project_id"],
-        "private_key_id": st.secrets["gcp_service_account"]["private_key_id"],
-        "private_key": st.secrets["gcp_service_account"]["private_key"],
-        "client_email": st.secrets["gcp_service_account"]["client_email"],
-        "client_id": st.secrets["gcp_service_account"]["client_id"],
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": st.secrets["gcp_service_account"]["client_x509_cert_url"]
-    },
-    scope
-)
+st.set_page_config(page_title="Backoffice - Acompanhamento de HUs", layout="centered")
+CSV_FILE = "./hus.csv"
 
-# Autenticação com o Google Sheets
-gc = gspread.authorize(credentials)
+# Função para carregar as HUs do arquivo CSV
+def load_hus():
+    if os.path.exists(CSV_FILE):
+        return pd.read_csv(CSV_FILE).to_dict(orient="records")
+    return []
 
-# Abrir a planilha
-try:
-    planilha = gc.open("Gerenciamento de aprovações de HU's").sheet1
-    dados = planilha.get_all_records()
-    df = pd.DataFrame(dados)
-    
-    if df.empty:
-        st.warning("⚠️ A planilha está vazia. Adicione dados antes de continuar.")
-    else:
-        st.write("### Lista de HUs para aprovação")
-        
-        # Verifica se as colunas esperadas existem
-        colunas_esperadas = ["ID", "Título"]
-        colunas_faltando = [col for col in colunas_esperadas if col not in df.columns]
+# Função para salvar as HUs no arquivo CSV
+def save_hus(hus):
+    pd.DataFrame(hus).to_csv(CSV_FILE, index=False)
 
-        if colunas_faltando:
-            st.error(f"🚨 As colunas {colunas_faltando} não foram encontradas na planilha.")
-            st.write("Colunas disponíveis na planilha:", df.columns.tolist())
+# Carregar HUs ao iniciar
+st.session_state.hus = load_hus()
+
+st.title("📌 Acompanhamento de HUs e Aprovação")
+
+# Formulário para adicionar HUs
+with st.form("nova_hu"):
+    hu_id = st.text_input("ID da HU")
+    descricao = st.text_area("Descrição da HU")
+    link_confluence = st.text_input("Link do Confluence")
+    submit = st.form_submit_button("Adicionar HU")
+
+    if submit:
+        if hu_id and descricao and link_confluence:
+            link_aprovacao = f"http://localhost:8502/?id={hu_id}"
+            nova_hu = {
+                "ID": hu_id,
+                "Descrição": descricao,
+                "Link Confluence": link_confluence,
+                "Link Aprovação": link_aprovacao,
+                "Status": "Pendente",
+                "Observação": ""
+            }
+            st.session_state.hus.append(nova_hu)
+            save_hus(st.session_state.hus)
+            st.success("✅ HU adicionada com sucesso!")
         else:
-            for _, row in df.iterrows():
-                st.write(f"**ID:** {row['ID']} - **{row['Título']}**")
-                st.write(f"[Ver detalhes](approval-page?page={row['ID']})")  # Link para a página de aprovação
-                st.write("---")
+            st.error("⚠️ Todos os campos são obrigatórios!")
 
-except gspread.exceptions.SpreadsheetNotFound:
-    st.error("🚨 A planilha não foi encontrada. Verifique se o nome está correto.")
-except Exception as e:
-    st.error(f"🚨 Erro inesperado: {e}")
+# Exibição das HUs cadastradas
+st.write("## 📜 Histórias de Usuário Cadastradas")
+if st.session_state.hus:
+    for hu in st.session_state.hus:
+        st.write(f"**ID:** {hu['ID']}")
+        st.write(f"**Descrição:** {hu['Descrição']}")
+        st.markdown(f"[🔗 Link Confluence]({hu['Link Confluence']})")
+        st.markdown(f"[📝 Link para Aprovação]({hu['Link Aprovação']})")
+        st.write(f"**Status:** {hu['Status']}")
+        st.write("---")
+else:
+    st.info("Nenhuma HU cadastrada ainda.")
