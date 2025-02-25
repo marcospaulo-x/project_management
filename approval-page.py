@@ -28,7 +28,7 @@ hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 st.write(f"ID capturado após ajuste: {hu_id}")
 
 # **Debug: Exibir a lista de IDs disponíveis na planilha**
-st.write(f"IDs disponíveis na planilha: {hus["ID_HU"].tolist()}")
+st.write(f"IDs disponíveis na planilha: {["ID_HU"].tolist()}")
 
 # **2️⃣ Carregar os dados da planilha**
 @st.cache_data
