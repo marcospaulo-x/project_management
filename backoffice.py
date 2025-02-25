@@ -10,9 +10,9 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
 client = gspread.authorize(credentials)
 SHEET_NAME = "Gerenciamento de Aprovações de HU's"
-spreadsheet = client.open_by_key(st.secrets["spreadsheet_id"])
+spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 print(st.secrets)  # Verifique se os segredos estão sendo carregados corretamente
-spreadsheet = client.open_by_key(st.secrets["spreadsheet_id"])
+spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # Definir URL do Streamlit Cloud (substitua pelo link do seu app)
