@@ -25,7 +25,7 @@ def load_hus():
 hus = load_hus()
 
 # **Título**
-st.title("📜 Histórias de Usuário Cadastradas")
+st.title("Cadastro e Gerenciamento de Histórias de Usuários")
 
 # **Formulário para adicionar nova HU**
 st.subheader("Adicionar Nova HU")
@@ -41,13 +41,11 @@ with st.form(key="new_hu_form"):
         st.experimental_rerun()
 
 # **Dropdown para selecionar a HU**
-hu_options = hus["ID_HU"] + " - " + hus["Título"]  # Formato: "HU123 - Nome da HU"
-selected_hu = st.selectbox("Selecione uma História de Usuário:", hu_options)
+selected_hu = st.selectbox("Selecione uma História de Usuário:", hus["ID_HU"])
 
 # **Exibir detalhes da HU selecionada**
 if selected_hu:
-    hu_id = selected_hu.split(" - ")[0]  # Extrai apenas o ID
-    hu_data = hus[hus["ID_HU"] == hu_id].iloc[0]  # Obtém os detalhes da HU
+    hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]  # Obtém os detalhes da HU
 
     # **Definir cor do status**
     status_colors = {
@@ -59,16 +57,28 @@ if selected_hu:
     status = hu_data["Status"]
     status_color = status_colors.get(status, "gray")  # Se não encontrar, usa cinza
 
-    # **Exibir informações**
-    st.markdown(f"**ID:** {hu_data['ID_HU']}")
-    st.markdown(f"**Título:** {hu_data['Título']}")
+    # **Exibir informações formatadas**
+    st.markdown("""
+        <style>
+        .status-box {
+            display: inline-block;
+            padding: 12px 24px;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+            width: 200px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.title(hu_data['Título'])
     st.markdown(f"**🔗 [Link Confluence]({hu_data['Link']})**")
     st.markdown(f"**📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})**")
-
-    # **Exibir status com rótulo colorido**
+    
+    # **Exibir status com destaque**
     st.markdown(
-        f'<div style="display:inline-block; padding:8px 16px; background-color:{status_color}; color:white; border-radius:8px;">'
-        f'📌 {status}'
-        f'</div>',
+        f'<div class="status-box" style="background-color:{status_color};">📌 {status}</div>',
         unsafe_allow_html=True
     )
