@@ -52,13 +52,16 @@ if not hu_data.empty:
     st.markdown(
         """
         <style>
-        .stButton button {
+        div.stButton > button {
             border-radius: 8px;
             font-weight: bold;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            width: 100%;
+            padding: 10px;
+            border: none;
         }
-        .stButton button:hover {
-            opacity: 0.9;
+        div.stButton > button:hover {
+            opacity: 0.8;
         }
         #aprovar {
             background-color: #4CAF50;
@@ -80,13 +83,13 @@ if not hu_data.empty:
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Aprovar", key="aprovar", use_container_width=True):
+        if st.button("Aprovar", key="aprovar"):
             st.session_state.decisao = "Aprovar"
     with col2:
-        if st.button("Reprovar", key="reprovar", use_container_width=True):
+        if st.button("Reprovar", key="reprovar"):
             st.session_state.decisao = "Reprovar"
     with col3:
-        if st.button("Ajustar", key="ajustar", use_container_width=True):
+        if st.button("Ajustar", key="ajustar"):
             st.session_state.decisao = "Ajustar"
 
     # Exibir formulário somente se uma decisão foi selecionada
