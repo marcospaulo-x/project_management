@@ -16,16 +16,9 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
 query_params = st.query_params
-hu_id = query_params.get("id", [""]) # Captura o primeiro valor da lista
-
-# **⚠️ Adiciona um print detalhado do ID**
-st.write(f"ID capturado antes do ajuste: {hu_id}")
-
-# **Garante que estamos pegando o ID completo**
+hu_id = query_params.get("id", [""])  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
-# **Debug: Exibir o ID final**
-st.write(f"ID capturado após ajuste: {hu_id}")
 # **2️⃣ Carregar os dados da planilha**
 @st.cache_data
 def load_hus():
@@ -34,18 +27,10 @@ def load_hus():
     df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que todos os IDs sejam strings
     return df
 
-
 hus = load_hus()
-# **Debug: Exibir a lista de IDs disponíveis na planilha**
-st.write(f"IDs disponíveis na planilha: {hus["ID_HU"].tolist()}")
-
-
-
-# **Debug: Exibir a lista de IDs disponíveis na planilha**
-st.write("IDs disponíveis na planilha:", hus)
 
 # **3️⃣ Buscar a HU correspondente**
-hu_data = hus[hus["ID_HU"] == hu_id]  # Agora deve funcionar corretamente
+hu_data = hus[hus["ID_HU"] == hu_id]  # Filtra a HU correspondente
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
