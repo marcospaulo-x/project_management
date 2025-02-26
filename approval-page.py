@@ -41,12 +41,41 @@ if not hu_data.empty:
 
     # Exibir iframe com o Confluence (ajustado para ocupar mais espaço)
     st.markdown(
-        f'<iframe src="{hu["Link"]}" width="100%" height="600" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
+        f'<iframe src="{hu["Link"]}" width="100%" height="600" style="border: 1px solid #ddd; border-radius: 10px; margin-bottom: 20px;"></iframe>',
         unsafe_allow_html=True
     )
 
     # **Botões de Aprovação**
     st.write("### Decisão de Aprovação")
+
+    # Estilos CSS para os botões
+    st.markdown(
+        """
+        <style>
+        .stButton button {
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .stButton button:hover {
+            opacity: 0.9;
+        }
+        #aprovar {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #reprovar {
+            background-color: #F44336;
+            color: white;
+        }
+        #ajustar {
+            background-color: #FFC107;
+            color: black;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
