@@ -41,7 +41,7 @@ if not hu_data.empty:
 
     # Exibir iframe com o Confluence (se permitido)
     st.markdown(
-        f'<iframe src="{hu["Link"]}" width="100%" height="800"></iframe>',
+        f'<iframe src="{hu["Link"]}" width="800" height="800"></iframe>',
         unsafe_allow_html=True
     )
 
