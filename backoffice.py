@@ -27,6 +27,19 @@ hus = load_hus()
 # **Título**
 st.title("📜 Histórias de Usuário Cadastradas")
 
+# **Formulário para adicionar nova HU**
+st.subheader("Adicionar Nova HU")
+with st.form(key="new_hu_form"):
+    new_id = st.text_input("ID da HU:")
+    new_title = st.text_input("Título da HU:")
+    new_link = st.text_input("Link do Confluence:")
+    submit_button = st.form_submit_button("Cadastrar HU")
+    
+    if submit_button and new_id and new_title and new_link:
+        sheet.append_row([new_id, new_title, new_link, "Pendente"])
+        st.success(f"HU {new_id} cadastrada com sucesso!")
+        st.experimental_rerun()
+
 # **Dropdown para selecionar a HU**
 hu_options = hus["ID_HU"] + " - " + hus["Título"]  # Formato: "HU123 - Nome da HU"
 selected_hu = st.selectbox("Selecione uma História de Usuário:", hu_options)
