@@ -45,7 +45,7 @@ with st.form(key="new_hu_form"):
         # Adiciona a nova HU na planilha
         sheet.append_row([new_id, new_title, new_link, new_project, "Pendente", "", "", ""])
         st.success(f"{new_id} cadastrada com sucesso!")  # Texto corrigido
-        st.experimental_rerun()
+        st.cache_data.clear()  # Limpa o cache para recarregar os dados da planilha
 
 # **Dropdown para selecionar a HU**
 selected_hu = st.selectbox("Selecione uma História de Usuário:", hus["ID_HU"])
