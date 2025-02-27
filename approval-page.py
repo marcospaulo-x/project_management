@@ -3,6 +3,7 @@ import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
 from PIL import Image  # Para carregar a imagem local
+import base64  # Para codificar a imagem em base64
 
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
@@ -121,29 +122,34 @@ if not hu_data.empty:
     # Adicionar imagem no rodapé
     try:
         # Carregar a imagem local
-        image = Image.open("images/grupo somapay - squad conta.png")  # Ajuste o caminho conforme necessário
+        image_path = "images/grupo somapay - squad conta.png"
+        with open(image_path, "rb") as image_file:
+            encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
+
+        # CSS para centralizar e ajustar o tamanho da imagem
         st.markdown(
-            """
+            f"""
             <style>
-            .footer {
+            .footer {{
                 text-align: center;
                 margin-top: 40px;
-            }
-            .footer img {
-                width: 200px; /* Ajuste o tamanho da imagem */
+            }}
+            .footer img {{
+                width: 300px; /* Ajuste o tamanho da imagem */
                 display: block;
                 margin-left: auto;
                 margin-right: auto;
                 border: 2px solid #ddd; /* Borda cinza */
                 border-radius: 10px; /* Bordas arredondadas */
                 box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
-            }
+            }}
             </style>
             <div class="footer">
+                <img src="data:image/png;base64,{encoded_image}" alt="Logo">
+            </div>
             """,
             unsafe_allow_html=True
         )
-        st.image(image, width=100)  # Ajuste o width conforme necessário
     except FileNotFoundError:
         st.warning("⚠️ Imagem não encontrada. Verifique o caminho do arquivo.")
 
