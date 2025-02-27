@@ -42,8 +42,8 @@ with st.form(key="new_hu_form"):
         if "Projeto" not in headers:
             sheet.insert_row(["Projeto"], 1)  # Adiciona a coluna "Projeto" se não existir
         
-        # Adiciona a nova HU na planilha
-        sheet.append_row([new_id, new_title, new_link, new_project, "Pendente", "", "", ""])
+        # Adiciona a nova HU na planilha na ordem correta
+        sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link])
         st.success(f"{new_id} cadastrada com sucesso!")  # Texto corrigido
         st.cache_data.clear()  # Limpa o cache para recarregar os dados da planilha
 
