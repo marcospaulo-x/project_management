@@ -41,76 +41,23 @@ if not hu_data.empty:
 
     # Exibir iframe com o Confluence (ajustado para ocupar mais espaço)
     st.markdown(
-        f'<iframe src="{hu["Link"]}" width="100%" height="600" style="border: 1px solid #ddd; border-radius: 10px; margin-bottom: 20px;"></iframe>',
+        f'<iframe src="{hu["Link"]}" width="100%" height="600" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
         unsafe_allow_html=True
     )
 
     # **Botões de Aprovação**
     st.write("### Decisão de Aprovação")
 
-    # Estilos CSS para os botões do Streamlit
-    st.markdown(
-        """
-        <style>
-        /* Estilo para o botão Aprovar */
-        div.stButton > button[data-testid="baseButton-primary"] {
-            background-color: #4CAF50 !important;
-            color: white !important;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: opacity 0.3s ease;
-            width: 100%;
-            padding: 10px;
-            border: none;
-        }
-        div.stButton > button[data-testid="baseButton-primary"]:hover {
-            opacity: 0.8;
-        }
-
-        /* Estilo para o botão Reprovar */
-        div.stButton > button[data-testid="baseButton-secondary"] {
-            background-color: #F44336 !important;
-            color: white !important;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: opacity 0.3s ease;
-            width: 100%;
-            padding: 10px;
-            border: none;
-        }
-        div.stButton > button[data-testid="baseButton-secondary"]:hover {
-            opacity: 0.8;
-        }
-
-        /* Estilo para o botão Ajustar */
-        div.stButton > button[data-testid="baseButton-tertiary"] {
-            background-color: #FFC107 !important;
-            color: black !important;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: opacity 0.3s ease;
-            width: 100%;
-            padding: 10px;
-            border: none;
-        }
-        div.stButton > button[data-testid="baseButton-tertiary"]:hover {
-            opacity: 0.8;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Aprovar", type="primary", key="aprovar"):
+        if st.button("Aprovar", key="aprovar", use_container_width=True):
             st.session_state.decisao = "Aprovar"
     with col2:
-        if st.button("Reprovar", type="secondary", key="reprovar"):
+        if st.button("Reprovar", key="reprovar", use_container_width=True):
             st.session_state.decisao = "Reprovar"
     with col3:
-        if st.button("Ajustar", type="tertiary", key="ajustar"):
+        if st.button("Ajustar", key="ajustar", use_container_width=True):
             st.session_state.decisao = "Ajustar"
 
     # Exibir formulário somente se uma decisão foi selecionada
