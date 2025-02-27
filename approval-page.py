@@ -154,7 +154,7 @@ if not hu_data.empty:
         }
         </style>
         <div class="footer">
-            <img src="https://drive.google.com/file/d/17Jpd5WiSXu8vJPDhU113AkONSWVfmNue/view?usp=sharing" alt="Grupo Somapay" width="100">
+            <img src="https://ibb.co/pjF6n89K" alt="Grupo Somapay" width="100">
         </div>
         """,
         unsafe_allow_html=True
