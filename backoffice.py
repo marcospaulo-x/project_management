@@ -44,14 +44,17 @@ with st.form(key="new_hu_form"):
         
         # Adiciona a nova HU na planilha na ordem correta
         sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link])
-        st.success(f"{new_id} cadastrada com sucesso!")  # Texto corrigido
-        st.cache_data.clear()  # Limpa o cache para recarregar os dados da planilha
+        st.success(f"{new_id} cadastrada com sucesso!")
+        
+        # Limpa o cache e recarrega os dados
+        st.cache_data.clear()
+        hus = load_hus()  # Recarrega os dados da planilha
 
 # **Dropdown para selecionar a HU**
-selected_hu = st.selectbox("Selecione uma História de Usuário:", hus["ID_HU"])
+selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].tolist())
 
 # **Exibir detalhes da HU selecionada**
-if selected_hu:
+if selected_hu and selected_hu != "":
     hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]  # Obtém os detalhes da HU
 
     # **Definir cor do status**
