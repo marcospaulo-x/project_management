@@ -32,8 +32,8 @@ st.subheader("Adicionar Nova HU")
 with st.form(key="new_hu_form"):
     new_id = st.text_input("ID da HU:")
     new_title = st.text_input("Título da HU:")
-    new_link = st.text_input("Link do Confluence:")
     new_project = st.text_input("Projeto:")  # Novo campo para o projeto
+    new_link = st.text_input("Link do Confluence:")    
     submit_button = st.form_submit_button("Cadastrar HU")
     
     if submit_button and new_id and new_title and new_link and new_project:
