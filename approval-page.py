@@ -126,7 +126,7 @@ if not hu_data.empty:
         # Criar uma coluna no rodapé para a imagem
         footer_col1, footer_col2, footer_col3 = st.columns([1, 2, 1])  # Colunas para centralizar a imagem
         with footer_col2:
-            st.image(image, width=400)  # Ajuste o width conforme necessário
+            st.image(image, width=450)  # Ajuste o width conforme necessário
     except FileNotFoundError:
         st.warning("⚠️ Imagem não encontrada. Verifique o caminho do arquivo.")
 
