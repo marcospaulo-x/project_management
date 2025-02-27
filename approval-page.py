@@ -126,24 +126,30 @@ if not hu_data.empty:
         with open(image_path, "rb") as image_file:
             encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
 
-        # CSS para centralizar e ajustar o tamanho da imagem
+        # CSS para fixar a imagem no rodapé
         st.markdown(
             f"""
             <style>
             .footer {{
+                position: fixed;
+                bottom: 20px; /* Distância do rodapé */
+                left: 50%;
+                transform: translateX(-50%);
                 text-align: center;
-                margin-top: auto;
+                z-index: 1000; /* Garante que a imagem fique acima de outros elementos */
             }}
             .footer img {{
-                width: 400px; /* Ajuste o tamanho da imagem */
+                width: 300px; /* Ajuste o tamanho da imagem */
                 display: block;
                 margin-left: auto;
-                margin-right: auto;                  
-                
+                margin-right: auto;
+                border: 2px solid #ddd; /* Borda cinza */
+                border-radius: 10px; /* Bordas arredondadas */
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
             }}
             </style>
             <div class="footer">
-                <img src="data:image/png;base64,{encoded_image}" alt="Grupo Somapay">
+                <img src="data:image/png;base64,{encoded_image}" alt="Logo">
             </div>
             """,
             unsafe_allow_html=True
