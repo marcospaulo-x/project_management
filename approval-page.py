@@ -78,27 +78,26 @@ if not hu_data.empty:
         if st.button("Ajustar 🛠", key="ajustar", use_container_width=True):
             st.session_state.decisao = "Ajustar"
 
-    # Exibir a decisão selecionada com cores personalizadas
+    # Exibir formulário somente se uma decisão foi selecionada
     if "decisao" in st.session_state:
-        if st.session_state.decisao == "Aprovar":
-            st.markdown(
-                f'<p class="green-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
-                unsafe_allow_html=True
-            )
-        elif st.session_state.decisao == "Reprovar":
-            st.markdown(
-                f'<p class="red-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
-                unsafe_allow_html=True
-            )
-        elif st.session_state.decisao == "Ajustar":
-            st.markdown(
-                f'<p class="yellow-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
-                unsafe_allow_html=True
-            )
-
-        # Exibir formulário somente se uma decisão foi selecionada
         with st.form("form_aprovacao"):
-            st.write(f"Você selecionou: **{st.session_state.decisao}**")
+            # Exibir a decisão selecionada com a palavra colorida
+            if st.session_state.decisao == "Aprovar":
+                st.markdown(
+                    'Você selecionou: <strong class="green-text">Aprovar</strong>',
+                    unsafe_allow_html=True
+                )
+            elif st.session_state.decisao == "Reprovar":
+                st.markdown(
+                    'Você selecionou: <strong class="red-text">Reprovar</strong>',
+                    unsafe_allow_html=True
+                )
+            elif st.session_state.decisao == "Ajustar":
+                st.markdown(
+                    'Você selecionou: <strong class="yellow-text">Ajustar</strong>',
+                    unsafe_allow_html=True
+                )
+
             nome = st.text_input("Seu Nome", placeholder="Digite seu nome")
             observacao = st.text_area("Observação (opcional)", placeholder="Digite uma observação, se necessário")
             submit = st.form_submit_button("Confirmar")
