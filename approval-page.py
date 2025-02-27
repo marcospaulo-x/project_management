@@ -35,72 +35,9 @@ hu_data = hus[hus["ID_HU"] == hu_id]  # Filtra a HU correspondente
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
 
-    # **Exibir informações no topo da página**
-    st.markdown(
-        """
-        <style>
-        .title {
-            font-size: 32px;
-            font-weight: bold;
-            color: #2E86C1;
-            margin-bottom: 10px;
-        }
-        .info-card {
-            padding: 15px;
-            border-radius: 10px;
-            background-color: #F4F6F6;
-            margin-bottom: 20px;
-        }
-        .info-card h3 {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2C3E50;
-        }
-        .info-card p {
-            font-size: 14px;
-            color: #566573;
-        }
-        .confluence-button {
-            background-color: #2E86C1;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px 0;
-        }
-        .confluence-button:hover {
-            background-color: #1B4F72;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # Título da página
-    st.markdown(f'<div class="title">📝 Aprovação da HU - {hu["Título"]}</div>', unsafe_allow_html=True)
-
-    # Card de informações da HU
-    st.markdown(
-        f"""
-        <div class="info-card">
-            <h3>📋 Detalhes da HU</h3>
-            <p><strong>ID:</strong> {hu["ID_HU"]}</p>
-            <p><strong>Status:</strong> {hu.get("Status", "Não informado")}</p>
-            <p><strong>Responsável:</strong> {hu.get("Responsável", "Não informado")}</p>
-            <p><strong>Data de Criação:</strong> {hu.get("Data de Criação", "Não informada")}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # Botão para o Confluence
-    st.markdown(
-        f'<a href="{hu["Link"]}" target="_blank" class="confluence-button">🔗 Acessar Confluence</a>',
-        unsafe_allow_html=True
-    )
+    # **Exibir informações**
+    st.title(f"📝 Aprovação da HU - {hu['Título']}")
+    st.markdown(f"[🔗 Link para o Confluence]({hu['Link']})")
 
     # Exibir iframe com o Confluence (ajustado para ocupar mais espaço)
     st.markdown(
