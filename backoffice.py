@@ -37,8 +37,14 @@ with st.form(key="new_hu_form"):
     submit_button = st.form_submit_button("Cadastrar HU")
     
     if submit_button and new_id and new_title and new_link and new_project:
-        sheet.append_row([new_id, new_title, new_link, new_project, "Pendente", "", "", ""])  # Adiciona projeto e status
-        st.success(f"HU {new_id} cadastrada com sucesso!")
+        # Verifica se a coluna "Projeto" existe na planilha
+        headers = sheet.row_values(1)  # Pega os cabeçalhos da planilha
+        if "Projeto" not in headers:
+            sheet.insert_row(["Projeto"], 1)  # Adiciona a coluna "Projeto" se não existir
+        
+        # Adiciona a nova HU na planilha
+        sheet.append_row([new_id, new_title, new_link, new_project, "Pendente", "", "", ""])
+        st.success(f"{new_id} cadastrada com sucesso!")  # Texto corrigido
         st.experimental_rerun()
 
 # **Dropdown para selecionar a HU**
