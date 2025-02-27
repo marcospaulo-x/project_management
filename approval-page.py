@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
+from PIL import Image  # Para carregar a imagem local
 
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
@@ -38,35 +39,8 @@ if not hu_data.empty:
     # **Exibir informações**
     st.title(f"📝 Aprovação da HU - {hu['Título']}")
 
-    # Botão discreto para o link do Confluence
-    st.markdown(
-        """
-        <style>
-        .confluence-button {
-            background-color: transparent;
-            color: #2E86C1;
-            padding: 8px 16px;
-            border: 1px solid #2E86C1;
-            border-radius: 5px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin: 10px 0;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .confluence-button:hover {
-            background-color: #2E86C1;
-            color: white;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        f'<a href="{hu["Link"]}" target="_blank" class="confluence-button">Link para o Confluence</a>',
-        unsafe_allow_html=True
-    )
+    # Link para o Confluence (apenas texto)
+    st.markdown(f"[Link para o Confluence]({hu['Link']})")
 
     # Exibir iframe com o Confluence (ajustado para ocupar mais espaço)
     st.markdown(
@@ -145,20 +119,24 @@ if not hu_data.empty:
                     del st.session_state.decisao  # Limpa a decisão após o envio
 
     # Adicionar imagem no rodapé
-    st.markdown(
-        """
-        <style>
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-        }
-        </style>
-        <div class="footer">
-            <a href="https://ibb.co/VWYsWHtT"><img alt="Grupo Somapay" border="0"></a><br /><a target='_blank'/>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    try:
+        # Carregar a imagem local
+        image = Image.open("C:\Users\marcos.paulo.SOMAPAY\Documents\Projetos\project_management\images\grupo somapay - squad conta.png")  # Ajuste o caminho conforme necessário
+        st.markdown(
+            """
+            <style>
+            .footer {
+                text-align: center;
+                margin-top: 40px;
+            }
+            </style>
+            <div class="footer">
+            """,
+            unsafe_allow_html=True
+        )
+        st.image(image, width=100)  # Ajuste o width conforme necessário
+    except FileNotFoundError:
+        st.warning("⚠️ Imagem não encontrada. Verifique o caminho do arquivo.")
 
 else:
     st.error("⚠️ História de Usuário não encontrada.")
