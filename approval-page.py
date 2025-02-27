@@ -132,18 +132,18 @@ if not hu_data.empty:
             <style>
             .footer {{
                 text-align: center;
-                margin-top: 100px;
+                margin-top: 150px;
             }}
             .footer img {{
                 width: 400px; /* Ajuste o tamanho da imagem */
                 display: block;
                 margin-left: auto;
-                margin-right: auto;                              
-                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+                margin-right: auto;                  
+                
             }}
             </style>
             <div class="footer">
-                <img src="data:image/png;base64,{encoded_image}" alt="Logo">
+                <img src="data:image/png;base64,{encoded_image}" alt="Grupo Somapay">
             </div>
             """,
             unsafe_allow_html=True
