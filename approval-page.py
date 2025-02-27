@@ -121,7 +121,7 @@ if not hu_data.empty:
     # Adicionar imagem no rodapé
     try:
         # Carregar a imagem local
-        image = Image.open("C:\Users\marcos.paulo.SOMAPAY\Documents\Projetos\project_management\images\grupo somapay - squad conta.png")  # Ajuste o caminho conforme necessário
+        image = Image.open("images\grupo somapay - squad conta.png")  # Ajuste o caminho conforme necessário
         st.markdown(
             """
             <style>
