@@ -59,13 +59,18 @@ if not hu_data.empty:
             font-weight: bold;
             text-align: center;
             cursor: pointer;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
             border: none;
             color: white;
             margin: 5px;
+            width: 100%;
         }
         .custom-button:hover {
             opacity: 0.8;
+        }
+        .custom-button.selected {
+            border: 2px solid #000;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
         }
         #aprovar {
             background-color: #4CAF50;
@@ -85,17 +90,17 @@ if not hu_data.empty:
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown(
+        aprovar = st.markdown(
             '<div class="custom-button" id="aprovar" onclick="handleButtonClick(\'Aprovar\')">Aprovar</div>',
             unsafe_allow_html=True
         )
     with col2:
-        st.markdown(
+        reprovar = st.markdown(
             '<div class="custom-button" id="reprovar" onclick="handleButtonClick(\'Reprovar\')">Reprovar</div>',
             unsafe_allow_html=True
         )
     with col3:
-        st.markdown(
+        ajustar = st.markdown(
             '<div class="custom-button" id="ajustar" onclick="handleButtonClick(\'Ajustar\')">Ajustar</div>',
             unsafe_allow_html=True
         )
@@ -105,6 +110,14 @@ if not hu_data.empty:
         """
         <script>
         function handleButtonClick(decisao) {
+            // Remove a classe 'selected' de todos os botões
+            document.querySelectorAll('.custom-button').forEach(button => {
+                button.classList.remove('selected');
+            });
+
+            // Adiciona a classe 'selected' ao botão clicado
+            event.target.classList.add('selected');
+
             // Envia a decisão para o Streamlit
             fetch('/_stcore/streamlit_component', {
                 method: 'POST',
