@@ -48,28 +48,30 @@ if not hu_data.empty:
     # **Botões de Aprovação**
     st.write("### Decisão de Aprovação")
 
-    # Estilos CSS para os botões
+    # Estilos CSS para os botões personalizados
     st.markdown(
         """
         <style>
-        div.stButton > button {
+        .custom-button {
+            display: inline-block;
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: bold;
-            transition: background-color 0.3s ease, opacity 0.3s ease;
-            width: 100%;
-            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
             border: none;
+            color: white;
+            margin: 5px;
         }
-        div.stButton > button:hover {
+        .custom-button:hover {
             opacity: 0.8;
         }
         #aprovar {
             background-color: #4CAF50;
-            color: white;
         }
         #reprovar {
             background-color: #F44336;
-            color: white;
         }
         #ajustar {
             background-color: #FFC107;
@@ -83,14 +85,39 @@ if not hu_data.empty:
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Aprovar", key="aprovar"):
-            st.session_state.decisao = "Aprovar"
+        st.markdown(
+            '<div class="custom-button" id="aprovar" onclick="handleButtonClick(\'Aprovar\')">Aprovar</div>',
+            unsafe_allow_html=True
+        )
     with col2:
-        if st.button("Reprovar", key="reprovar"):
-            st.session_state.decisao = "Reprovar"
+        st.markdown(
+            '<div class="custom-button" id="reprovar" onclick="handleButtonClick(\'Reprovar\')">Reprovar</div>',
+            unsafe_allow_html=True
+        )
     with col3:
-        if st.button("Ajustar", key="ajustar"):
-            st.session_state.decisao = "Ajustar"
+        st.markdown(
+            '<div class="custom-button" id="ajustar" onclick="handleButtonClick(\'Ajustar\')">Ajustar</div>',
+            unsafe_allow_html=True
+        )
+
+    # JavaScript para lidar com o clique nos botões
+    st.markdown(
+        """
+        <script>
+        function handleButtonClick(decisao) {
+            // Envia a decisão para o Streamlit
+            fetch('/_stcore/streamlit_component', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ decisao: decisao }),
+            });
+        }
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Exibir formulário somente se uma decisão foi selecionada
     if "decisao" in st.session_state:
