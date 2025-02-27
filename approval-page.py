@@ -129,6 +129,12 @@ if not hu_data.empty:
                 text-align: center;
                 margin-top: 40px;
             }
+            .footer img {
+                width: 200px; /* Ajuste o tamanho da imagem */
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
             </style>
             <div class="footer">
             """,
