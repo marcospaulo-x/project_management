@@ -132,7 +132,7 @@ if not hu_data.empty:
             <style>
             .footer {{
                 text-align: center;
-                margin-top: 350px;
+                margin-top: auto;
             }}
             .footer img {{
                 width: 400px; /* Ajuste o tamanho da imagem */
