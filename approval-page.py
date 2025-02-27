@@ -48,39 +48,53 @@ if not hu_data.empty:
     # **Botões de Aprovação**
     st.write("### Decisão de Aprovação")
 
-    # Estilos CSS para os botões personalizados
+    # Estilos CSS para os botões do Streamlit
     st.markdown(
         """
         <style>
-        .custom-button {
-            display: inline-block;
-            padding: 10px 20px;
+        /* Estilo para o botão Aprovar */
+        div.stButton > button[data-testid="baseButton-primary"] {
+            background-color: #4CAF50 !important;
+            color: white !important;
             border-radius: 8px;
             font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            color: white;
-            margin: 5px;
+            transition: opacity 0.3s ease;
             width: 100%;
+            padding: 10px;
+            border: none;
         }
-        .custom-button:hover {
+        div.stButton > button[data-testid="baseButton-primary"]:hover {
             opacity: 0.8;
         }
-        .custom-button.selected {
-            border: 2px solid #000;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+
+        /* Estilo para o botão Reprovar */
+        div.stButton > button[data-testid="baseButton-secondary"] {
+            background-color: #F44336 !important;
+            color: white !important;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+            width: 100%;
+            padding: 10px;
+            border: none;
         }
-        #aprovar {
-            background-color: #4CAF50;
+        div.stButton > button[data-testid="baseButton-secondary"]:hover {
+            opacity: 0.8;
         }
-        #reprovar {
-            background-color: #F44336;
+
+        /* Estilo para o botão Ajustar */
+        div.stButton > button[data-testid="baseButton-tertiary"] {
+            background-color: #FFC107 !important;
+            color: black !important;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+            width: 100%;
+            padding: 10px;
+            border: none;
         }
-        #ajustar {
-            background-color: #FFC107;
-            color: black;
+        div.stButton > button[data-testid="baseButton-tertiary"]:hover {
+            opacity: 0.8;
         }
         </style>
         """,
@@ -90,47 +104,14 @@ if not hu_data.empty:
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
     with col1:
-        aprovar = st.markdown(
-            '<div class="custom-button" id="aprovar" onclick="handleButtonClick(\'Aprovar\')">Aprovar</div>',
-            unsafe_allow_html=True
-        )
+        if st.button("Aprovar", type="primary", key="aprovar"):
+            st.session_state.decisao = "Aprovar"
     with col2:
-        reprovar = st.markdown(
-            '<div class="custom-button" id="reprovar" onclick="handleButtonClick(\'Reprovar\')">Reprovar</div>',
-            unsafe_allow_html=True
-        )
+        if st.button("Reprovar", type="secondary", key="reprovar"):
+            st.session_state.decisao = "Reprovar"
     with col3:
-        ajustar = st.markdown(
-            '<div class="custom-button" id="ajustar" onclick="handleButtonClick(\'Ajustar\')">Ajustar</div>',
-            unsafe_allow_html=True
-        )
-
-    # JavaScript para lidar com o clique nos botões
-    st.markdown(
-        """
-        <script>
-        function handleButtonClick(decisao) {
-            // Remove a classe 'selected' de todos os botões
-            document.querySelectorAll('.custom-button').forEach(button => {
-                button.classList.remove('selected');
-            });
-
-            // Adiciona a classe 'selected' ao botão clicado
-            event.target.classList.add('selected');
-
-            // Envia a decisão para o Streamlit
-            fetch('/_stcore/streamlit_component', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ decisao: decisao }),
-            });
-        }
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+        if st.button("Ajustar", type="tertiary", key="ajustar"):
+            st.session_state.decisao = "Ajustar"
 
     # Exibir formulário somente se uma decisão foi selecionada
     if "decisao" in st.session_state:
