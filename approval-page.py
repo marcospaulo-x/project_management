@@ -154,7 +154,7 @@ if not hu_data.empty:
         }
         </style>
         <div class="footer">
-            <a href="https://ibb.co/VWYsWHtT"><img src="https://i.ibb.co/VWYsWHtT/rodap-pagina-de-aprova-o-1.png" alt="Grupo Somapay" border="0"></a>
+            <a href="https://ibb.co/VWYsWHtT"><img alt="Grupo Somapay" border="0"></a><br /><a target='_blank'/>
         </div>
         """,
         unsafe_allow_html=True
