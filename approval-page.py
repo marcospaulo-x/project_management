@@ -154,7 +154,7 @@ if not hu_data.empty:
         }
         </style>
         <div class="footer">
-            <img src="https://ibb.co/pjF6n89K" alt="Grupo Somapay" width="100">
+            <a href="https://ibb.co/pjF6n89K"><img src="https://i.ibb.co/nMJqRv51/rodap-pagina-de-aprova-o.png" alt="rodap-pagina-de-aprova-o" border="0"></a><br /><a target='_blank' href='https://pt-br.imgbb.com/'>como colocar foto no email</a><br />
         </div>
         """,
         unsafe_allow_html=True
