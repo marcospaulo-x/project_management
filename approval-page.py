@@ -134,6 +134,9 @@ if not hu_data.empty:
                 display: block;
                 margin-left: auto;
                 margin-right: auto;
+                border: 2px solid #ddd; /* Borda cinza */
+                border-radius: 10px; /* Bordas arredondadas */
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
             }
             </style>
             <div class="footer">
