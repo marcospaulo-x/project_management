@@ -33,10 +33,11 @@ with st.form(key="new_hu_form"):
     new_id = st.text_input("ID da HU:")
     new_title = st.text_input("Título da HU:")
     new_link = st.text_input("Link do Confluence:")
+    new_project = st.text_input("Projeto:")  # Novo campo para o projeto
     submit_button = st.form_submit_button("Cadastrar HU")
     
-    if submit_button and new_id and new_title and new_link:
-        sheet.append_row([new_id, new_title, new_link, "Pendente"])
+    if submit_button and new_id and new_title and new_link and new_project:
+        sheet.append_row([new_id, new_title, new_link, new_project, "Pendente", "", "", ""])  # Adiciona projeto e status
         st.success(f"HU {new_id} cadastrada com sucesso!")
         st.experimental_rerun()
 
@@ -76,6 +77,7 @@ if selected_hu:
     st.title(hu_data['Título'])
     st.markdown(f"**🔗 [Link Confluence]({hu_data['Link']})**")
     st.markdown(f"**📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})**")
+    st.markdown(f"**📂 Projeto: {hu_data.get('Projeto', 'Não informado')}**")  # Exibe o projeto
     
     # **Exibir status com destaque**
     st.markdown(
