@@ -50,21 +50,21 @@ if not hu_data.empty:
 
     # CSS personalizado para modificar a cor do texto exibido
     st.markdown(
-    """
-    <style>
-    .green-text {
-        color: #4CAF50 !important; /* Verde */
-    }
-    .red-text {
-        color: #F44336 !important; /* Vermelho */
-    }
-    .yellow-text {
-        color: #FFC107 !important; /* Amarelo */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+        """
+        <style>
+        .green-text {
+            color: #4CAF50 !important; /* Verde */
+        }
+        .red-text {
+            color: #F44336 !important; /* Vermelho */
+        }
+        .yellow-text {
+            color: #FFC107 !important; /* Amarelo */
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Usar colunas para posicionar os botões lado a lado
     col1, col2, col3 = st.columns(3)
@@ -78,26 +78,25 @@ if not hu_data.empty:
         if st.button("Ajustar 🛠", key="ajustar", use_container_width=True):
             st.session_state.decisao = "Ajustar"
 
-            # Exibir a decisão selecionada com cores personalizadas
-if "decisao" in st.session_state:
-    if st.session_state.decisao == "Aprovar":
-        st.markdown(
-            f'<p class="green-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
-            unsafe_allow_html=True
-        )
-    elif st.session_state.decisao == "Reprovar":
-        st.markdown(
-            f'<p class="red-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
-            unsafe_allow_html=True
-        )
-    elif st.session_state.decisao == "Ajustar":
-        st.markdown(
-            f'<p class="yellow-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
-            unsafe_allow_html=True
-        )
-
-    # Exibir formulário somente se uma decisão foi selecionada
+    # Exibir a decisão selecionada com cores personalizadas
     if "decisao" in st.session_state:
+        if st.session_state.decisao == "Aprovar":
+            st.markdown(
+                f'<p class="green-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
+                unsafe_allow_html=True
+            )
+        elif st.session_state.decisao == "Reprovar":
+            st.markdown(
+                f'<p class="red-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
+                unsafe_allow_html=True
+            )
+        elif st.session_state.decisao == "Ajustar":
+            st.markdown(
+                f'<p class="yellow-text">Você selecionou: <strong>{st.session_state.decisao}</strong></p>',
+                unsafe_allow_html=True
+            )
+
+        # Exibir formulário somente se uma decisão foi selecionada
         with st.form("form_aprovacao"):
             st.write(f"Você selecionou: **{st.session_state.decisao}**")
             nome = st.text_input("Seu Nome", placeholder="Digite seu nome")
