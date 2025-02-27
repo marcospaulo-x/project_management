@@ -16,8 +16,8 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
-query_params = st.query_params
-hu_id = query_params.get("id", [""])  # Captura o primeiro valor da lista
+query_params = st.experimental_get_query_params()  # Usar experimental_get_query_params
+hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
 # **2️⃣ Carregar os dados da planilha**
@@ -73,29 +73,29 @@ if not hu_data.empty:
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("Aprovar ✅", key="aprovar", use_container_width=True):
-            st.session_state.decisao = "Aprovar"
+            st.session_state.decisao = "Aprovado"
     with col2:
         if st.button("Reprovar ❌", key="reprovar", use_container_width=True):
-            st.session_state.decisao = "Reprovar"
+            st.session_state.decisao = "Reprovado"
     with col3:
         if st.button("Ajustar 🛠", key="ajustar", use_container_width=True):
-            st.session_state.decisao = "Ajustar"
+            st.session_state.decisao = "Ajuste Solicitado"
 
     # Exibir formulário somente se uma decisão foi selecionada
     if "decisao" in st.session_state:
         with st.form("form_aprovacao"):
             # Exibir a decisão selecionada com a palavra colorida
-            if st.session_state.decisao == "Aprovar":
+            if st.session_state.decisao == "Aprovado":
                 st.markdown(
                     'Você selecionou: <strong class="green-text">Aprovar</strong>',
                     unsafe_allow_html=True
                 )
-            elif st.session_state.decisao == "Reprovar":
+            elif st.session_state.decisao == "Reprovado":
                 st.markdown(
                     'Você selecionou: <strong class="red-text">Reprovar</strong>',
                     unsafe_allow_html=True
                 )
-            elif st.session_state.decisao == "Ajustar":
+            elif st.session_state.decisao == "Ajuste Solicitado":
                 st.markdown(
                     'Você selecionou: <strong class="yellow-text">Ajustar</strong>',
                     unsafe_allow_html=True
@@ -111,9 +111,9 @@ if not hu_data.empty:
                 else:
                     # Atualizar a planilha com a decisão
                     row_index = hu_data.index[0] + 2  # Linha da HU na planilha (gspread começa em 1)
-                    sheet.update_cell(row_index, 3, st.session_state.decisao)  # Atualiza 'Status'
-                    sheet.update_cell(row_index, 4, nome)  # Atualiza 'Stakeholder Aprovador'
-                    sheet.update_cell(row_index, 5, observacao)  # Atualiza 'Observação'
+                    sheet.update_cell(row_index, 4, st.session_state.decisao)  # Atualiza 'Status'
+                    sheet.update_cell(row_index, 5, nome)  # Atualiza 'Stakeholder Aprovador'
+                    sheet.update_cell(row_index, 6, observacao)  # Atualiza 'Observação'
 
                     st.success("✅ Resposta registrada com sucesso!")
                     del st.session_state.decisao  # Limpa a decisão após o envio
