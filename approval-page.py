@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
-from PIL import Image  # Para carregar a imagem local
 
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
@@ -16,8 +15,8 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
-query_params = st.query_params
-hu_id = query_params.get("id", [""])  # Captura o primeiro valor da lista
+query_params = st.experimental_get_query_params()  # Usar experimental_get_query_params
+hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
 # **2️⃣ Carregar os dados da planilha**
@@ -38,9 +37,7 @@ if not hu_data.empty:
 
     # **Exibir informações**
     st.title(f"📝 Aprovação da HU - {hu['Título']}")
-
-    # Link para o Confluence (apenas texto)
-    st.markdown(f"[Link para o Confluence]({hu['Link']})")
+    st.markdown(f"[🔗 Link para o Confluence]({hu['Link']})")
 
     # Exibir iframe com o Confluence (ajustado para ocupar mais espaço)
     st.markdown(
@@ -117,18 +114,6 @@ if not hu_data.empty:
 
                     st.success("✅ Resposta registrada com sucesso!")
                     del st.session_state.decisao  # Limpa a decisão após o envio
-
-    # Adicionar imagem no rodapé
-    try:
-        # Carregar a imagem local
-        image = Image.open("images/grupo somapay - squad conta.png")  # Ajuste o caminho conforme necessário
-
-        # Criar uma coluna no rodapé para a imagem
-        footer_col1, footer_col2, footer_col3 = st.columns([1, 2, 1])  # Colunas para centralizar a imagem
-        with footer_col2:
-            st.image(image, width=450)  # Ajuste o width conforme necessário
-    except FileNotFoundError:
-        st.warning("⚠️ Imagem não encontrada. Verifique o caminho do arquivo.")
 
 else:
     st.error("⚠️ História de Usuário não encontrada.")
