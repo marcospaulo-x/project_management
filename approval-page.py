@@ -15,11 +15,7 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
-try:
-    query_params = st.query_params  # Nova abordagem recomendada
-except AttributeError:
-    query_params = st.experimental_get_query_params()  # Fallback para versões antigas
-
+query_params = st.experimental_get_query_params()  # Captura os parâmetros da URL
 hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
