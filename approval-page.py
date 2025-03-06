@@ -10,6 +10,14 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
 
+# Esconder avisos do Streamlit com CSS
+hide_streamlit_style = """
+    <style>
+        [data-testid="stNotification"] {display: none !important;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Conectar ao Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
@@ -69,12 +77,6 @@ if not hu_data.empty:
         if st.button("Ajustar 🛠", key="ajustar", use_container_width=True):
             st.session_state.decisao = "Ajustar"
 
-    # Exibir iframe com o Confluence
-    st.markdown(
-        f'<iframe src="{hu["Link"]}" width="100%" height="800" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
-        unsafe_allow_html=True
-    )
-
     # Exibir formulário somente se uma decisão foi selecionada
     if "decisao" in st.session_state:
         with st.form("form_aprovacao"):
@@ -102,6 +104,12 @@ if not hu_data.empty:
 
                     st.success("✅ Resposta registrada com sucesso!")
                     del st.session_state.decisao  # Limpa a decisão após o envio
+
+    # Exibir iframe com o Confluence
+    st.markdown(
+        f'<iframe src="{hu["Link"]}" width="100%" height="800" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
+        unsafe_allow_html=True
+    )
 
 else:
     st.error("⚠️ História de Usuário não encontrada.")
