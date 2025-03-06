@@ -20,10 +20,10 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
 query_params = st.query_params  # Captura os parâmetros da URL
-hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
-hu_id = str(hu_id).strip()  # Converte para string e remove espaços
+hu_id = query_params.get("id", [""])  # Captura o valor do parâmetro "id"
+hu_id = str(hu_id[0]).strip() if hu_id else ""  # Converte para string e remove espaços
 
-# Debug: Exibir parâmetros da URL
+# Debug: Exibir parâmetros da URL e HU ID capturado
 st.write("🛠 Parâmetros recebidos da URL:", query_params)
 st.write("🔍 HU ID capturado:", hu_id)
 
