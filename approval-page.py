@@ -23,9 +23,11 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
-query_params = st.query_params  # Captura os parâmetros da URL
-hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
+hu_id = st.query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
+
+# Debug: Exibir o HU ID capturado
+st.write("🔍 HU ID capturado:", hu_id)
 
 # **2️⃣ Carregar os dados da planilha**
 def load_hus():
@@ -36,8 +38,14 @@ def load_hus():
 
 hus = load_hus()
 
+# Debug: Exibir os dados carregados da planilha
+st.write("📊 Dados carregados da planilha:", hus)
+
 # **3️⃣ Buscar a HU correspondente**
 hu_data = hus[hus["ID_HU"] == hu_id]
+
+# Debug: Exibir a HU encontrada
+st.write("🔍 HU encontrada:", hu_data)
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
