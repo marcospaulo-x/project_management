@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
-import warnings
-
-# Ocultar avisos do experimental_get_query_params()
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
@@ -27,7 +23,7 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
-query_params = st.experimental_get_query_params()  # Captura os parâmetros da URL
+query_params = st.query_params  # Captura os parâmetros da URL
 hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
