@@ -95,9 +95,9 @@ if hu_id:
                     else:
                         # Atualizar a planilha com a decisão
                         row_index = hu_data.index[0] + 2  # Linha da HU na planilha (gspread começa em 1)
-                        sheet.update_cell(row_index, 3, st.session_state.decisao)  # Atualiza 'Status'
-                        sheet.update_cell(row_index, 4, nome)  # Atualiza 'Stakeholder Aprovador'
-                        sheet.update_cell(row_index, 5, observacao)  # Atualiza 'Observação'
+                        sheet.update_cell(row_index, 4, st.session_state.decisao)  # Coluna 4 - Status (Aprovado, Reprovado, Ajuste)
+                        sheet.update_cell(row_index, 5, nome)  # Coluna 5 - Stakeholder Aprovador
+                        sheet.update_cell(row_index, 6, observacao)  # Coluna 6 - Observação
 
                         st.success("✅ Resposta registrada com sucesso!")
                         del st.session_state.decisao  # Limpa a decisão após o envio
