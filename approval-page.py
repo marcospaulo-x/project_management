@@ -20,22 +20,30 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
 query_params = st.query_params  # Captura os parâmetros da URL
-st.write("🛠 Parâmetros recebidos da URL:", query_params)
 hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
+
+# Debug: Exibir parâmetros da URL
+st.write("🛠 Parâmetros recebidos da URL:", query_params)
+st.write("🔍 HU ID capturado:", hu_id)
 
 # **2️⃣ Carregar os dados da planilha**
 def load_hus():
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
-    df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que todos os IDs sejam strings
+    df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que todos os IDs sejam strings e sem espaços
     return df
 
 hus = load_hus()
 
+# Debug: Exibir os dados carregados da planilha
+st.write("📊 Dados carregados da planilha:", hus)
+
 # **3️⃣ Buscar a HU correspondente**
 hu_data = hus[hus["ID_HU"] == hu_id]
-st.write("🔍 HU encontrada:", hu_data)  # Debug temporário
+
+# Debug: Exibir a HU encontrada
+st.write("🔍 HU encontrada:", hu_data)
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
