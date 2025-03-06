@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
+import warnings
+
+# Ocultar avisos do experimental_get_query_params()
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
@@ -28,14 +32,8 @@ def load_hus():
 
 hus = load_hus()
 
-# Debug: Verificar os dados carregados
-st.write("📌 Dados carregados da planilha:")
-st.dataframe(hus)  # Exibe os dados lidos do Google Sheets
-
 # **3️⃣ Buscar a HU correspondente**
-st.write(f"🔎 Buscando HU: {hu_id}")
 hu_data = hus[hus["ID_HU"] == hu_id]
-st.write("🔍 HU encontrada:", hu_data)
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
@@ -44,7 +42,7 @@ if not hu_data.empty:
     st.title(f"📝 Aprovação da HU - {hu['Título']}")
     st.markdown(f"[🔗 Link para o Confluence]({hu['Link']})")
 
-    # Exibir iframe com o Confluence (ajustado para ocupar mais espaço)
+    # Exibir iframe com o Confluence
     st.markdown(
         f'<iframe src="{hu["Link"]}" width="100%" height="800" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
         unsafe_allow_html=True
@@ -57,15 +55,9 @@ if not hu_data.empty:
     st.markdown(
         """
         <style>
-        .green-text {
-            color: #4CAF50 !important; /* Verde */
-        }
-        .red-text {
-            color: #F44336 !important; /* Vermelho */
-        }
-        .yellow-text {
-            color: #FFC107 !important; /* Amarelo */
-        }
+        .green-text { color: #4CAF50 !important; } /* Verde */
+        .red-text { color: #F44336 !important; } /* Vermelho */
+        .yellow-text { color: #FFC107 !important; } /* Amarelo */
         </style>
         """,
         unsafe_allow_html=True
@@ -88,20 +80,11 @@ if not hu_data.empty:
         with st.form("form_aprovacao"):
             # Exibir a decisão selecionada com a palavra colorida
             if st.session_state.decisao == "Aprovar":
-                st.markdown(
-                    'Você selecionou: <strong class="green-text">Aprovar</strong>',
-                    unsafe_allow_html=True
-                )
+                st.markdown('Você selecionou: <strong class="green-text">Aprovar</strong>', unsafe_allow_html=True)
             elif st.session_state.decisao == "Reprovar":
-                st.markdown(
-                    'Você selecionou: <strong class="red-text">Reprovar</strong>',
-                    unsafe_allow_html=True
-                )
+                st.markdown('Você selecionou: <strong class="red-text">Reprovar</strong>', unsafe_allow_html=True)
             elif st.session_state.decisao == "Ajustar":
-                st.markdown(
-                    'Você selecionou: <strong class="yellow-text">Ajustar</strong>',
-                    unsafe_allow_html=True
-                )
+                st.markdown('Você selecionou: <strong class="yellow-text">Ajustar</strong>', unsafe_allow_html=True)
 
             nome = st.text_input("Seu Nome", placeholder="Digite seu nome")
             observacao = st.text_area("Observação (opcional)", placeholder="Digite uma observação, se necessário")
