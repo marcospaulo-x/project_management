@@ -20,6 +20,7 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
 query_params = st.query_params  # Captura os parâmetros da URL
+st.write("🛠 Parâmetros recebidos da URL:", query_params)
 hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
 hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
@@ -34,6 +35,7 @@ hus = load_hus()
 
 # **3️⃣ Buscar a HU correspondente**
 hu_data = hus[hus["ID_HU"] == hu_id]
+st.write("🔍 HU encontrada:", hu_data)  # Debug temporário
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
