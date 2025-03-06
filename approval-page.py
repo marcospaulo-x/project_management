@@ -20,12 +20,8 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # **1️⃣ Capturar o ID da HU da URL**
 query_params = st.experimental_get_query_params()  # Captura os parâmetros da URL
-hu_id = query_params.get("id", [""])  # Captura o valor do parâmetro "id"
-hu_id = str(hu_id[0]).strip() if hu_id else ""  # Converte para string e remove espaços
-
-# Debug: Exibir parâmetros da URL e HU ID capturado
-st.write("🛠 Parâmetros recebidos da URL:", query_params)
-st.write("🔍 HU ID capturado:", hu_id)
+hu_id = query_params.get("id", [""])[0]  # Captura o primeiro valor da lista
+hu_id = str(hu_id).strip()  # Converte para string e remove espaços
 
 # **2️⃣ Carregar os dados da planilha**
 def load_hus():
@@ -36,14 +32,8 @@ def load_hus():
 
 hus = load_hus()
 
-# Debug: Exibir os dados carregados da planilha
-st.write("📊 Dados carregados da planilha:", hus)
-
 # **3️⃣ Buscar a HU correspondente**
 hu_data = hus[hus["ID_HU"] == hu_id]
-
-# Debug: Exibir a HU encontrada
-st.write("🔍 HU encontrada:", hu_data)
 
 if not hu_data.empty:
     hu = hu_data.iloc[0]  # Obtém a primeira linha correspondente
@@ -51,12 +41,6 @@ if not hu_data.empty:
     # **Exibir informações**
     st.title(f"📝 Aprovação da HU - {hu['Título']}")
     st.markdown(f"[🔗 Link para o Confluence]({hu['Link']})")
-
-    # Exibir iframe com o Confluence
-    st.markdown(
-        f'<iframe src="{hu["Link"]}" width="100%" height="800" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
-        unsafe_allow_html=True
-    )
 
     # **Botões de Aprovação**
     st.write("### Decisão de Aprovação")
@@ -84,6 +68,12 @@ if not hu_data.empty:
     with col3:
         if st.button("Ajustar 🛠", key="ajustar", use_container_width=True):
             st.session_state.decisao = "Ajustar"
+
+    # Exibir iframe com o Confluence
+    st.markdown(
+        f'<iframe src="{hu["Link"]}" width="100%" height="800" style="border: 1px solid #ddd; border-radius: 10px;"></iframe>',
+        unsafe_allow_html=True
+    )
 
     # Exibir formulário somente se uma decisão foi selecionada
     if "decisao" in st.session_state:
