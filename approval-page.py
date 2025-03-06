@@ -27,8 +27,7 @@ hu_id = st.query_params.get("id")  # Captura o valor do parâmetro "id"
 
 if hu_id:
     hu_id = hu_id.strip()  # Remove espaços em branco
-    st.write(f"🔍 HU ID capturado: {hu_id}")
-
+    
     # **2️⃣ Carregar os dados da planilha**
     def load_hus():
         data = sheet.get_all_records()
