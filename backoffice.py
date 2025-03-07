@@ -22,6 +22,13 @@ def load_hus():
     df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que os IDs sejam strings
     return df
 
+def update_hu_status():
+    hus = load_hus()
+    approved_count = hus[hus["Status"] == "Aprovado"].shape[0]
+    rejected_count = hus[hus["Status"] == "Reprovado"].shape[0]
+    adjustment_count = hus[hus["Status"] == "Ajuste Solicitado"].shape[0]
+    return approved_count, rejected_count, adjustment_count
+
 hus = load_hus()
 
 # **Título**
@@ -30,10 +37,10 @@ st.title("Cadastro e Gerenciamento de Histórias de Usuários")
 # **Formulário para adicionar nova HU**
 st.subheader("Adicionar Nova HU")
 with st.form(key="new_hu_form"):
-    new_project = st.text_input("Projeto:")  # Coluna 1
-    new_id = st.text_input("ID da HU:")  # Coluna 2
-    new_title = st.text_input("Título da HU:")  # Coluna 3
-    new_link = st.text_input("Link do Confluence:")  # Coluna 7
+    new_id = st.text_input("ID da HU:")
+    new_title = st.text_input("Título da HU:")
+    new_project = st.text_input("Projeto:")  # Novo campo para o projeto
+    new_link = st.text_input("Link do Confluence:")    
     submit_button = st.form_submit_button("Cadastrar HU")
     
     if submit_button and new_id and new_title and new_link and new_project:
@@ -53,6 +60,7 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 
 # **Exibir detalhes da HU selecionada**
 if selected_hu and selected_hu != "":
+    hus = load_hus()  # Recarrega os dados para refletir mudanças
     hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]
     
     # **Definir cor do status**
@@ -65,14 +73,8 @@ if selected_hu and selected_hu != "":
     status = hu_data["Status"]
     status_color = status_colors.get(status, "#6c757d")
     
-    # **Contagem de aprovações**
-    approved_count = hus[hus["Status"] == "Aprovado"].shape[0]
-    rejected_count = hus[hus["Status"] == "Reprovado"].shape[0]
-    adjustment_count = hus[hus["Status"] == "Ajuste Solicitado"].shape[0]
-    
-    # **Atualizar status na planilha**
-    hu_index = hus.index[hus["ID_HU"] == selected_hu].tolist()[0] + 2  # Índice do Google Sheets
-    sheet.update_cell(hu_index, 4, status)  # Coluna Status
+    # **Recalcular contagem de status**
+    approved_count, rejected_count, adjustment_count = update_hu_status()
     
     # **Layout organizado com colunas**
     col1, col2 = st.columns([2, 3])
@@ -81,7 +83,7 @@ if selected_hu and selected_hu != "":
         st.subheader(hu_data['Título'])
         st.markdown(f"📂 **Projeto:** {hu_data.get('Projeto', 'Não informado')}")
         st.markdown(f"🔗 [Link Confluence]({hu_data['Link']})")
-        st.markdown(f"📝 [Link para Aprovação]({hu_data['Link de Aprovação']})")
+        st.markdown(f"📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})")
     
     with col2:
         st.markdown("### 📌 Status Atual")
