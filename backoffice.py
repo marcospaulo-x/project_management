@@ -23,8 +23,7 @@ def load_hus():
 
 hus = load_hus()
 
-# **2️⃣ Atualizar exibição quando houver mudanças na planilha**
-st.experimental_rerun()
+
 
 # **3️⃣ Exibir tabela com aprovações**
 st.title("📊 Painel de Aprovação de HU's")
