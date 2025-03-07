@@ -66,28 +66,13 @@ if selected_hu and selected_hu != "":
     status_color = status_colors.get(status, "#6c757d")
     
     # **Contagem de aprovações**
-    filtered_data = hus[hus["ID_HU"] == selected_hu]
-    approved_count = (filtered_data["Status"] == "Aprovado").sum()
-    rejected_count = (filtered_data["Status"] == "Reprovado").sum()
-    adjustment_count = (filtered_data["Status"] == "Ajuste Solicitado").sum()
-    
-    # **Atualiza o status com base nos votos**
-    if approved_count > max(rejected_count, adjustment_count):
-        new_status = "Aprovado"
-    elif rejected_count > max(approved_count, adjustment_count):
-        new_status = "Reprovado"
-    elif adjustment_count > max(approved_count, rejected_count):
-        new_status = "Ajuste Solicitado"
-    else:
-        new_status = "Pendente"
-    
-    if new_status != status:
-        sheet.update_cell(filtered_data.index[0] + 2, 4, new_status)
-        status = new_status
+    approved_count = hus[hus["Status"] == "Aprovado"].shape[0]
+    rejected_count = hus[hus["Status"] == "Reprovado"].shape[0]
+    adjustment_count = hus[hus["Status"] == "Ajuste Solicitado"].shape[0]
     
     # **Atualizar status na planilha**
     hu_index = hus.index[hus["ID_HU"] == selected_hu].tolist()[0] + 2  # Índice do Google Sheets
-    sheet.update_cell(hu_index, 4, new_status)  # Coluna Status
+    sheet.update_cell(hu_index, 4, status)  # Coluna Status
     
     # **Layout organizado com colunas**
     col1, col2 = st.columns([2, 3])
@@ -100,7 +85,14 @@ if selected_hu and selected_hu != "":
     
     with col2:
         st.markdown("### 📌 Status Atual")
-        st.markdown(f"<div style='background-color:#f4f4f4; padding:10px; border-radius:10px; text-align:center; font-size:18px; font-weight:bold;'>{new_status}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div style='background-color:#f4f4f4; padding:10px; border-radius:10px; text-align:center; font-size:18px; font-weight:bold; border: 2px solid {status_color}; color: {status_color};'>
+                {status}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         
         st.markdown("---")
         st.metric("✔️ Aprovados", approved_count)
