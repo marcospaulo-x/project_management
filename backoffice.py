@@ -29,6 +29,10 @@ def update_hu_status():
     adjustment_count = hus[hus["Status"] == "Ajuste Solicitado"].shape[0]
     return approved_count, rejected_count, adjustment_count
 
+def get_stakeholders_by_status(hus, status):
+    stakeholders = hus[hus["Status"] == status]["Stakeholder Aprovador"].tolist()
+    return ", ".join(stakeholders)
+
 hus = load_hus()
 
 # **Título**
@@ -76,6 +80,11 @@ if selected_hu and selected_hu != "":
     # **Recalcular contagem de status**
     approved_count, rejected_count, adjustment_count = update_hu_status()
     
+    # **Obter stakeholders por status**
+    approved_stakeholders = get_stakeholders_by_status(hus, "Aprovado")
+    rejected_stakeholders = get_stakeholders_by_status(hus, "Reprovado")
+    adjustment_stakeholders = get_stakeholders_by_status(hus, "Ajuste Solicitado")
+    
     # **Layout organizado com colunas**
     col1, col2 = st.columns([2, 3])
     
@@ -98,5 +107,10 @@ if selected_hu and selected_hu != "":
         
         st.markdown("---")
         st.metric("✔️ Aprovados", approved_count)
+        st.markdown(f"**Stakeholders:** {approved_stakeholders}")
+        
         st.metric("❌ Reprovados", rejected_count)
+        st.markdown(f"**Stakeholders:** {rejected_stakeholders}")
+        
         st.metric("🔧 Ajustes Solicitados", adjustment_count)
+        st.markdown(f"**Stakeholders:** {adjustment_stakeholders}")
