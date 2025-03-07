@@ -30,10 +30,10 @@ st.title("Cadastro e Gerenciamento de Histórias de Usuários")
 # **Formulário para adicionar nova HU**
 st.subheader("Adicionar Nova HU")
 with st.form(key="new_hu_form"):
-    new_id = st.text_input("ID da HU:")
-    new_title = st.text_input("Título da HU:")
-    new_project = st.text_input("Projeto:")  # Novo campo para o projeto
-    new_link = st.text_input("Link do Confluence:")    
+    new_project = st.text_input("Projeto:")  # Coluna 1
+    new_id = st.text_input("ID da HU:")  # Coluna 2
+    new_title = st.text_input("Título da HU:")  # Coluna 3
+    new_link = st.text_input("Link do Confluence:")  # Coluna 7
     submit_button = st.form_submit_button("Cadastrar HU")
     
     if submit_button and new_id and new_title and new_link and new_project:
@@ -81,7 +81,7 @@ if selected_hu and selected_hu != "":
         st.subheader(hu_data['Título'])
         st.markdown(f"📂 **Projeto:** {hu_data.get('Projeto', 'Não informado')}")
         st.markdown(f"🔗 [Link Confluence]({hu_data['Link']})")
-        st.markdown(f"📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})")
+        st.markdown(f"📝 [Link para Aprovação]({hu_data['Link de Aprovação']})")
     
     with col2:
         st.markdown("### 📌 Status Atual")
