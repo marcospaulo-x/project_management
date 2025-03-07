@@ -55,15 +55,35 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 if selected_hu and selected_hu != "":
     hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]
     
-    # **Contagem de Aprovações**
-    status_counts = hus[hus["ID_HU"] == selected_hu]["Status"].value_counts().to_dict()
-    approved_count = status_counts.get("Aprovado", 0)
-    rejected_count = status_counts.get("Reprovado", 0)
-    adjustment_count = status_counts.get("Ajuste Solicitado", 0)
+    # **Definir cor do status**
+    status_colors = {
+        "Aprovado": "#28a745",
+        "Reprovado": "#dc3545",
+        "Ajuste Solicitado": "#ffc107",
+        "Pendente": "#6c757d"
+    }
+    status = hu_data["Status"]
+    status_color = status_colors.get(status, "#6c757d")
     
-    # **Definir novo status com base na maioria**
-    status_priority = {"Aprovado": approved_count, "Reprovado": rejected_count, "Ajuste Solicitado": adjustment_count}
-    new_status = max(status_priority, key=status_priority.get) if any(status_priority.values()) else "Pendente"
+    # **Contagem de aprovações**
+    filtered_data = hus[hus["ID_HU"] == selected_hu]
+    approved_count = (filtered_data["Status"] == "Aprovado").sum()
+    rejected_count = (filtered_data["Status"] == "Reprovado").sum()
+    adjustment_count = (filtered_data["Status"] == "Ajuste Solicitado").sum()
+    
+    # **Atualiza o status com base nos votos**
+    if approved_count > max(rejected_count, adjustment_count):
+        new_status = "Aprovado"
+    elif rejected_count > max(approved_count, adjustment_count):
+        new_status = "Reprovado"
+    elif adjustment_count > max(approved_count, rejected_count):
+        new_status = "Ajuste Solicitado"
+    else:
+        new_status = "Pendente"
+    
+    if new_status != status:
+        sheet.update_cell(filtered_data.index[0] + 2, 4, new_status)
+        status = new_status
     
     # **Atualizar status na planilha**
     hu_index = hus.index[hus["ID_HU"] == selected_hu].tolist()[0] + 2  # Índice do Google Sheets
