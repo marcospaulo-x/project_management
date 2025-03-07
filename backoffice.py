@@ -19,7 +19,7 @@ sheet = spreadsheet.worksheet(SHEET_NAME)
 def load_hus():
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
-    df["ID_HU"] = df["ID_HU"].astype(str).str.strip()
+    df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que os IDs sejam strings
     return df
 
 hus = load_hus()
@@ -32,20 +32,19 @@ st.subheader("Adicionar Nova HU")
 with st.form(key="new_hu_form"):
     new_id = st.text_input("ID da HU:")
     new_title = st.text_input("Título da HU:")
-    new_project = st.text_input("Projeto:")
+    new_project = st.text_input("Projeto:")  # Novo campo para o projeto
     new_link = st.text_input("Link do Confluence:")    
     submit_button = st.form_submit_button("Cadastrar HU")
     
     if submit_button and new_id and new_title and new_link and new_project:
-        headers = sheet.row_values(1)
-        if "Projeto" not in headers:
-            sheet.insert_row(["Projeto"], 1)
-        
+        # Gera o link de aprovação dinamicamente
         approval_link = f"https://aprovacao-de-hus.streamlit.app/?id={new_id}"
         
+        # Adiciona a nova HU na planilha na ordem correta
         sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link, approval_link])
         st.success(f"{new_id} cadastrada com sucesso!")
         
+        # Limpa o cache e recarrega os dados
         st.cache_data.clear()
         hus = load_hus()
 
@@ -55,67 +54,35 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 # **Exibir detalhes da HU selecionada**
 if selected_hu and selected_hu != "":
     hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]
-
-    # **Definir cor do status**
-    status_colors = {
-        "Aprovado": "#28a745",
-        "Reprovado": "#dc3545",
-        "Ajuste Solicitado": "#ffc107",
-        "Pendente": "#6c757d"
-    }
-    status = hu_data["Status"]
-    status_color = status_colors.get(status, "#6c757d")
     
-    # **Contagem de aprovações**
-    filtered_data = hus[hus["ID_HU"] == selected_hu]
-    approved_count = (filtered_data["Status"] == "Aprovado").sum()
-    rejected_count = (filtered_data["Status"] == "Reprovado").sum()
-    adjustment_count = (filtered_data["Status"] == "Ajuste Solicitado").sum()
+    # **Contagem de Aprovações**
+    status_counts = hus[hus["ID_HU"] == selected_hu]["Status"].value_counts().to_dict()
+    approved_count = status_counts.get("Aprovado", 0)
+    rejected_count = status_counts.get("Reprovado", 0)
+    adjustment_count = status_counts.get("Ajuste Solicitado", 0)
     
-    # **Atualiza o status com base nos votos**
-    if approved_count > max(rejected_count, adjustment_count):
-        new_status = "Aprovado"
-    elif rejected_count > max(approved_count, adjustment_count):
-        new_status = "Reprovado"
-    elif adjustment_count > max(approved_count, rejected_count):
-        new_status = "Ajuste Solicitado"
-    else:
-        new_status = "Pendente"
+    # **Definir novo status com base na maioria**
+    status_priority = {"Aprovado": approved_count, "Reprovado": rejected_count, "Ajuste Solicitado": adjustment_count}
+    new_status = max(status_priority, key=status_priority.get) if any(status_priority.values()) else "Pendente"
     
-    if new_status != status:
-        sheet.update_cell(filtered_data.index[0] + 2, 4, new_status)
-        status = new_status
+    # **Atualizar status na planilha**
+    hu_index = hus.index[hus["ID_HU"] == selected_hu].tolist()[0] + 2  # Índice do Google Sheets
+    sheet.update_cell(hu_index, 4, new_status)  # Coluna Status
     
-    # **Exibir informações formatadas**
-    st.markdown(f"""
-        <style>
-        .status-box {{
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px;
-            color: white;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 18px;
-            background-color: {status_color};
-        }}
-        .counter-box {{
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 16px;
-        }}
-        </style>
-    """, unsafe_allow_html=True)
+    # **Layout organizado com colunas**
+    col1, col2 = st.columns([2, 3])
     
-    st.markdown(f"## {hu_data['Título']}")
-    st.markdown(f"**📂 Projeto: {hu_data.get('Projeto', 'Não informado')}**")
-    st.markdown(f"🔗 [Link Confluence]({hu_data['Link']})")
-    st.markdown(f"📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})")
+    with col1:
+        st.subheader(hu_data['Título'])
+        st.markdown(f"📂 **Projeto:** {hu_data.get('Projeto', 'Não informado')}")
+        st.markdown(f"🔗 [Link Confluence]({hu_data['Link']})")
+        st.markdown(f"📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})")
     
-    st.markdown(f'<div class="status-box">📌 {status}</div>', unsafe_allow_html=True)
-    
-    st.markdown(f'<div class="counter-box">✅ Aprovados: {approved_count}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="counter-box">❌ Reprovados: {rejected_count}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="counter-box">⚠️ Ajuste Solicitado: {adjustment_count}</div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown("### 📌 Status Atual")
+        st.markdown(f"<div style='background-color:#f4f4f4; padding:10px; border-radius:10px; text-align:center; font-size:18px; font-weight:bold;'>{new_status}</div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.metric("✔️ Aprovados", approved_count)
+        st.metric("❌ Reprovados", rejected_count)
+        st.metric("🔧 Ajustes Solicitados", adjustment_count)
