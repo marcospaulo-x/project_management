@@ -14,8 +14,7 @@ SHEET_NAME = "Controle de HU's"
 spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
-# **Carregar os dados da planilha**
-@st.cache_data
+# **Carregar os dados da planilha (sem cache)**
 def load_hus():
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
@@ -64,9 +63,8 @@ with st.form(key="new_hu_form"):
         
         # Limpa o cache e recarrega os dados
         st.cache_data.clear()
-        hus = load_hus()
 
-# **Recarregar os dados da planilha**
+# **Recarregar os dados da planilha (sem cache)**
 hus = load_hus()
 
 # **Dropdown para selecionar a HU**
