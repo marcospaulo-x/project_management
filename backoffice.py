@@ -142,24 +142,17 @@ if selected_hu and selected_hu != "":
         # **Stakeholders e Justificativas**
         st.subheader("👥 Stakeholders e Justificativas")
         with st.container():
-            for _, row in stakeholders.iterrows():
-                stakeholder = row["Stakeholder Aprovador"]
-                status_vote = row["Status"]
-                observacao = row["Observação"]
+            # Selectbox para exibir os stakeholders
+            selected_stakeholder = st.selectbox(
+                "Selecione um stakeholder para ver detalhes:",
+                [f"{row['Stakeholder Aprovador']} {'📝' if pd.notna(row['Observação']) else ''}" for _, row in stakeholders.iterrows()]
+            )
+            
+            # Exibir observação (se houver)
+            if selected_stakeholder:
+                stakeholder_name = selected_stakeholder.replace(" 📝", "")  # Remove o ícone de observação
+                observacao = stakeholders[stakeholders["Stakeholder Aprovador"] == stakeholder_name]["Observação"].iloc[0]
                 
-                # Ícone correspondente ao voto
-                if status_vote == "Aprovado":
-                    icon = "✔️"
-                elif status_vote == "Reprovado":
-                    icon = "❌"
-                elif status_vote == "Ajuste Solicitado":
-                    icon = "🔧"
-                else:
-                    icon = "❓"
-                
-                # Exibir stakeholder e ícone
                 if pd.notna(observacao):
-                    with st.expander(f"{icon} {stakeholder} (Ver observação)"):
-                        st.markdown(f"**Observação:** {observacao}")
-                else:
-                    st.markdown(f"{icon} {stakeholder}")
+                    st.markdown(f"**Observação de {stakeholder_name}:**")
+                    st.markdown(f"> {observacao}")
