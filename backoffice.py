@@ -67,6 +67,7 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 # **Exibir detalhes da HU selecionada**
 if selected_hu and selected_hu != "":
     hus = load_hus()  # Recarrega os dados para refletir mudanças
+    hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]  # Define hu_data corretamente
     
     # **Obter status majoritário e stakeholders**
     status = get_majority_status(hus, selected_hu)
