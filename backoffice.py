@@ -22,18 +22,16 @@ def load_hus():
     df["ID_HU"] = df["ID_HU"].astype(str).str.strip()  # Garante que os IDs sejam strings
     return df
 
-def get_majority_status(hus, hu_id):
-    hu_votes = hus[hus["ID_HU"] == hu_id]
-    if hu_votes.empty:
-        return "Pendente"
-    status_counts = hu_votes["Status"].value_counts()
-    return status_counts.idxmax()  # Retorna o status com mais votos
+def update_hu_status():
+    hus = load_hus()
+    approved_count = hus[hus["Status"] == "Aprovado"].shape[0]
+    rejected_count = hus[hus["Status"] == "Reprovado"].shape[0]
+    adjustment_count = hus[hus["Status"] == "Ajuste Solicitado"].shape[0]
+    return approved_count, rejected_count, adjustment_count
 
-def get_stakeholders_and_justifications(hus, hu_id):
-    hu_votes = hus[hus["ID_HU"] == hu_id]
-    stakeholders = ", ".join(hu_votes["Stakeholders"].tolist())
-    justifications = "\n".join(hu_votes["Justificativas"].dropna().tolist())
-    return stakeholders, justifications
+def get_stakeholders_by_status(hus, status):
+    stakeholders = hus[hus["Status"] == status]["Stakeholder Aprovador"].tolist()
+    return ", ".join(stakeholders)
 
 hus = load_hus()
 
@@ -67,10 +65,7 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 # **Exibir detalhes da HU selecionada**
 if selected_hu and selected_hu != "":
     hus = load_hus()  # Recarrega os dados para refletir mudanças
-    
-    # **Obter status majoritário e stakeholders**
-    status = get_majority_status(hus, selected_hu)
-    stakeholders, justifications = get_stakeholders_and_justifications(hus, selected_hu)
+    hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]
     
     # **Definir cor do status**
     status_colors = {
@@ -79,7 +74,16 @@ if selected_hu and selected_hu != "":
         "Ajuste Solicitado": "#ffc107",
         "Pendente": "#6c757d"
     }
+    status = hu_data["Status"]
     status_color = status_colors.get(status, "#6c757d")
+    
+    # **Recalcular contagem de status**
+    approved_count, rejected_count, adjustment_count = update_hu_status()
+    
+    # **Obter stakeholders por status**
+    approved_stakeholders = get_stakeholders_by_status(hus, "Aprovado")
+    rejected_stakeholders = get_stakeholders_by_status(hus, "Reprovado")
+    adjustment_stakeholders = get_stakeholders_by_status(hus, "Ajuste Solicitado")
     
     # **Layout organizado com colunas**
     col1, col2 = st.columns([2, 3])
@@ -102,5 +106,11 @@ if selected_hu and selected_hu != "":
         )
         
         st.markdown("---")
-        st.markdown(f"**Stakeholders:** {stakeholders}")
-        st.markdown(f"**Justificativas:** {justifications}")
+        st.metric("✔️ Aprovados", approved_count)
+        st.markdown(f"**Stakeholders:** {approved_stakeholders}")
+        
+        st.metric("❌ Reprovados", rejected_count)
+        st.markdown(f"**Stakeholders:** {rejected_stakeholders}")
+        
+        st.metric("🔧 Ajustes Solicitados", adjustment_count)
+        st.markdown(f"**Stakeholders:** {adjustment_stakeholders}")
