@@ -37,9 +37,8 @@ def get_vote_counts(hus, hu_id):
 
 def get_stakeholders_and_justifications(hus, hu_id):
     hu_votes = hus[hus["ID_HU"] == hu_id]
-    stakeholders = ", ".join(hu_votes["Stakeholder Aprovador"].dropna().tolist())
-    justifications = "\n".join(hu_votes["Observação"].dropna().tolist())
-    return stakeholders, justifications
+    stakeholders = hu_votes[["Stakeholder Aprovador", "Status", "Observação"]].dropna().to_dict("records")
+    return stakeholders
 
 # **Título**
 st.title("Cadastro e Gerenciamento de Histórias de Usuários")
@@ -81,7 +80,7 @@ if selected_hu and selected_hu != "":
     # **Obter status majoritário e contagem de votos**
     status = get_majority_status(hus, selected_hu)
     approved_count, rejected_count, adjustment_count = get_vote_counts(hus, selected_hu)
-    stakeholders, justifications = get_stakeholders_and_justifications(hus, selected_hu)
+    stakeholders = get_stakeholders_and_justifications(hus, selected_hu)
     
     # **Definir cor do status**
     status_colors = {
@@ -100,11 +99,11 @@ if selected_hu and selected_hu != "":
         st.subheader("📄 Detalhes da HU")
         st.markdown(
             f"""
-            <div style='background-color:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;'>
-                <p style='font-size:18px; font-weight:bold;'>{hu_data['Título']}</p>
-                <p style='font-size:16px;'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
-                <p style='font-size:16px;'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank">Acessar</a></p>
-                <p style='font-size:16px;'>📝 <strong>Link para Aprovação:</strong> <a href="https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']}" target="_blank">Aprovar</a></p>
+            <div style='background-color:var(--background-color); padding:20px; border-radius:10px; border: 1px solid var(--border-color);'>
+                <p style='font-size:18px; font-weight:bold; color:var(--text-color);'>{hu_data['Título']}</p>
+                <p style='font-size:16px; color:var(--text-color);'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
+                <p style='font-size:16px; color:var(--text-color);'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank" style='color:var(--link-color);'>Acessar</a></p>
+                <p style='font-size:16px; color:var(--text-color);'>📝 <strong>Link para Aprovação:</strong> <a href="https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']}" target="_blank" style='color:var(--link-color);'>Aprovar</a></p>
             </div>
             """,
             unsafe_allow_html=True
@@ -115,24 +114,24 @@ if selected_hu and selected_hu != "":
         st.subheader("📊 Status e Votos")
         st.markdown(
             f"""
-            <div style='background-color:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;'>
-                <p style='font-size:18px; font-weight:bold;'>📌 Status Atual</p>
+            <div style='background-color:var(--background-color); padding:20px; border-radius:10px; border: 1px solid var(--border-color);'>
+                <p style='font-size:18px; font-weight:bold; color:var(--text-color);'>📌 Status Atual</p>
                 <div style='background-color:{status_color}; padding:10px; border-radius:8px; text-align:center; font-size:18px; font-weight:bold; color:white;'>
                     {status}
                 </div>
                 <br>
                 <div style='display:flex; justify-content:space-between;'>
                     <div style='text-align:center;'>
-                        <p style='font-size:16px;'>✔️ Aprovados</p>
-                        <p style='font-size:24px; font-weight:bold;'>{approved_count}</p>
+                        <p style='font-size:16px; color:var(--text-color);'>✔️ Aprovados</p>
+                        <p style='font-size:24px; font-weight:bold; color:var(--text-color);'>{approved_count}</p>
                     </div>
                     <div style='text-align:center;'>
-                        <p style='font-size:16px;'>❌ Reprovados</p>
-                        <p style='font-size:24px; font-weight:bold;'>{rejected_count}</p>
+                        <p style='font-size:16px; color:var(--text-color);'>❌ Reprovados</p>
+                        <p style='font-size:24px; font-weight:bold; color:var(--text-color);'>{rejected_count}</p>
                     </div>
                     <div style='text-align:center;'>
-                        <p style='font-size:16px;'>🔧 Ajustes Solicitados</p>
-                        <p style='font-size:24px; font-weight:bold;'>{adjustment_count}</p>
+                        <p style='font-size:16px; color:var(--text-color);'>🔧 Ajustes Solicitados</p>
+                        <p style='font-size:24px; font-weight:bold; color:var(--text-color);'>{adjustment_count}</p>
                     </div>
                 </div>
             </div>
@@ -145,13 +144,27 @@ if selected_hu and selected_hu != "":
         st.subheader("👥 Stakeholders e Justificativas")
         st.markdown(
             f"""
-            <div style='background-color:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;'>
-                <p style='font-size:16px;'><strong>Stakeholders:</strong> {stakeholders}</p>
-                <p style='font-size:16px;'><strong>Justificativas:</strong></p>
-                <div style='background-color:#ffffff; padding:10px; border-radius:8px; border: 1px solid #ddd;'>
-                    <p style='font-size:14px;'>{justifications}</p>
-                </div>
-            </div>
+            <div style='background-color:var(--background-color); padding:20px; border-radius:10px; border: 1px solid var(--border-color);'>
+                <p style='font-size:16px; color:var(--text-color);'><strong>Stakeholders:</strong></p>
+                <div style='max-height:300px; overflow-y:auto;'>
             """,
             unsafe_allow_html=True
         )
+        
+        for stakeholder in stakeholders:
+            icon = "✔️" if stakeholder["Status"] == "Aprovado" else "❌" if stakeholder["Status"] == "Reprovado" else "🔧"
+            observacao = stakeholder["Observação"] if stakeholder["Observação"] else "Nenhuma observação"
+            st.markdown(
+                f"""
+                <div style='background-color:var(--secondary-background-color); padding:10px; border-radius:8px; border: 1px solid var(--border-color); margin-bottom:10px;'>
+                    <p style='font-size:16px; color:var(--text-color);'>{icon} {stakeholder["Stakeholder Aprovador"]}</p>
+                    <details>
+                        <summary style='font-size:14px; color:var(--text-color); cursor:pointer;'>📝 Ver observação</summary>
+                        <p style='font-size:14px; color:var(--text-color); margin-top:5px;'>{observacao}</p>
+                    </details>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+        st.markdown("</div></div>", unsafe_allow_html=True)
