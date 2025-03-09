@@ -31,8 +31,8 @@ def get_majority_status(hus, hu_id):
 
 def get_stakeholders_and_justifications(hus, hu_id):
     hu_votes = hus[hus["ID_HU"] == hu_id]
-    stakeholders = ", ".join(hu_votes["Stakeholders"].tolist())
-    justifications = "\n".join(hu_votes["Justificativas"].dropna().tolist())
+    stakeholders = ", ".join(hu_votes["Stakeholders Aprovador"].tolist())
+    justifications = "\n".join(hu_votes["Observação"].dropna().tolist())
     return stakeholders, justifications
 
 hus = load_hus()
