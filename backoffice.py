@@ -29,6 +29,13 @@ def get_majority_status(hus, hu_id):
     status_counts = hu_votes["Status"].value_counts()
     return status_counts.idxmax()  # Retorna o status com mais votos
 
+def get_vote_counts(hus, hu_id):
+    hu_votes = hus[hus["ID_HU"] == hu_id]
+    approved_count = hu_votes[hu_votes["Status"] == "Aprovado"].shape[0]
+    rejected_count = hu_votes[hu_votes["Status"] == "Reprovado"].shape[0]
+    adjustment_count = hu_votes[hu_votes["Status"] == "Ajuste Solicitado"].shape[0]
+    return approved_count, rejected_count, adjustment_count
+
 def get_stakeholders_and_justifications(hus, hu_id):
     hu_votes = hus[hus["ID_HU"] == hu_id]
     stakeholders = ", ".join(hu_votes["Stakeholder Aprovador"].tolist())
@@ -67,10 +74,13 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 # **Exibir detalhes da HU selecionada**
 if selected_hu and selected_hu != "":
     hus = load_hus()  # Recarrega os dados para refletir mudanças
-    hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]  # Define hu_data corretamente
     
-    # **Obter status majoritário e stakeholders**
+    # **Definir hu_data**
+    hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]  # Obtém os detalhes da HU selecionada
+    
+    # **Obter status majoritário e contagem de votos**
     status = get_majority_status(hus, selected_hu)
+    approved_count, rejected_count, adjustment_count = get_vote_counts(hus, selected_hu)
     stakeholders, justifications = get_stakeholders_and_justifications(hus, selected_hu)
     
     # **Definir cor do status**
@@ -103,5 +113,9 @@ if selected_hu and selected_hu != "":
         )
         
         st.markdown("---")
+        st.metric("✔️ Aprovados", approved_count)
+        st.metric("❌ Reprovados", rejected_count)
+        st.metric("🔧 Ajustes Solicitados", adjustment_count)
+        
         st.markdown(f"**Stakeholders:** {stakeholders}")
         st.markdown(f"**Justificativas:** {justifications}")
