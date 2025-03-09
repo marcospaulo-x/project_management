@@ -38,11 +38,9 @@ def get_vote_counts(hus, hu_id):
 
 def get_stakeholders_and_justifications(hus, hu_id):
     hu_votes = hus[hus["ID_HU"] == hu_id]
-    stakeholders = ", ".join(hu_votes["Stakeholder Aprovador"].tolist())
+    stakeholders = ", ".join(hu_votes["Stakeholder Aprovador"].dropna().tolist())
     justifications = "\n".join(hu_votes["Observação"].dropna().tolist())
     return stakeholders, justifications
-
-hus = load_hus()
 
 # **Título**
 st.title("Cadastro e Gerenciamento de Histórias de Usuários")
@@ -68,12 +66,16 @@ with st.form(key="new_hu_form"):
         st.cache_data.clear()
         hus = load_hus()
 
+# **Recarregar os dados da planilha**
+hus = load_hus()
+
 # **Dropdown para selecionar a HU**
-selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].tolist())
+selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].drop_duplicates().tolist())
 
 # **Exibir detalhes da HU selecionada**
 if selected_hu and selected_hu != "":
-    hus = load_hus()  # Recarrega os dados para refletir mudanças
+    # **Recarregar os dados da planilha para garantir que estejam atualizados**
+    hus = load_hus()
     
     # **Definir hu_data**
     hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]  # Obtém os detalhes da HU selecionada
