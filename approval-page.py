@@ -86,7 +86,7 @@ if hu_id:
                         st.error("⚠️ Nome é obrigatório para registrar a aprovação!")
                     else:
                         # Adiciona uma nova linha com o voto do stakeholder
-                        sheet.append_row([hu["Projeto"], hu["ID_HU"], hu["Título"], st.session_state.decisao, nome, observacao, hu["Link"], hu["Link Aprovação"]])
+                        sheet.append_row([hu["Projeto"], hu["ID_HU"], hu["Título"], st.session_state.decisao, nome, observacao, hu["Link"], hu["Link de Aprovação"]])
                         st.success("✅ Resposta registrada com sucesso!")
                         del st.session_state.decisao  # Limpa a decisão após o envio
 
