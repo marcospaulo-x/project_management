@@ -6,6 +6,14 @@ from google.oauth2.service_account import Credentials
 # Configuração da página
 st.set_page_config(page_title="Aprovação de Histórias de Usuário", layout="centered")
 
+# Esconder avisos do Streamlit com CSS
+hide_streamlit_style = """
+    <style>
+        [data-testid="stNotification"] {display: none !important;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Conectar ao Google Sheets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
@@ -58,23 +66,23 @@ if hu_id:
         col1, col2, col3 = st.columns(3)
         with col1:
             if st.button("Aprovar ✅", key="aprovar", use_container_width=True):
-                st.session_state.decisao = "Aprovado"
+                st.session_state.decisao = "Aprovar"
         with col2:
             if st.button("Reprovar ❌", key="reprovar", use_container_width=True):
-                st.session_state.decisao = "Reprovado"
+                st.session_state.decisao = "Reprovar"
         with col3:
             if st.button("Ajustar 🛠", key="ajustar", use_container_width=True):
-                st.session_state.decisao = "Ajuste Solicitado"
+                st.session_state.decisao = "Ajustar"
 
         # Exibir formulário somente se uma decisão foi selecionada
         if "decisao" in st.session_state:
             with st.form("form_aprovacao"):
                 # Exibir a decisão selecionada com a palavra colorida
-                if st.session_state.decisao == "Aprovado":
+                if st.session_state.decisao == "Aprovar":
                     st.markdown('Você selecionou: <strong class="green-text">Aprovar</strong>', unsafe_allow_html=True)
-                elif st.session_state.decisao == "Reprovado":
+                elif st.session_state.decisao == "Reprovar":
                     st.markdown('Você selecionou: <strong class="red-text">Reprovar</strong>', unsafe_allow_html=True)
-                elif st.session_state.decisao == "Ajuste Solicitado":
+                elif st.session_state.decisao == "Ajustar":
                     st.markdown('Você selecionou: <strong class="yellow-text">Ajustar</strong>', unsafe_allow_html=True)
 
                 nome = st.text_input("Seu Nome", placeholder="Digite seu nome")
@@ -85,8 +93,12 @@ if hu_id:
                     if not nome:
                         st.error("⚠️ Nome é obrigatório para registrar a aprovação!")
                     else:
-                        # Adiciona uma nova linha com o voto do stakeholder
-                        sheet.append_row([hu["Projeto"], hu["ID_HU"], hu["Título"], st.session_state.decisao, nome, observacao, hu["Link"], hu["Link Aprovação"]])
+                        # Atualizar a planilha com a decisão
+                        row_index = hu_data.index[0] + 2  # Linha da HU na planilha (gspread começa em 1)
+                        sheet.update_cell(row_index, 4, st.session_state.decisao)  # Coluna 4 - Status (Aprovado, Reprovado, Ajuste)
+                        sheet.update_cell(row_index, 5, nome)  # Coluna 5 - Stakeholder Aprovador
+                        sheet.update_cell(row_index, 6, observacao)  # Coluna 6 - Observação
+
                         st.success("✅ Resposta registrada com sucesso!")
                         del st.session_state.decisao  # Limpa a decisão após o envio
 
