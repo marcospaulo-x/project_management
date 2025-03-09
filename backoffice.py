@@ -85,37 +85,73 @@ if selected_hu and selected_hu != "":
     
     # **Definir cor do status**
     status_colors = {
-        "Aprovado": "#28a745",
-        "Reprovado": "#dc3545",
-        "Ajuste Solicitado": "#ffc107",
-        "Pendente": "#6c757d"
+        "Aprovado": "#28a745",  # Verde
+        "Reprovado": "#dc3545",  # Vermelho
+        "Ajuste Solicitado": "#ffc107",  # Amarelo
+        "Pendente": "#6c757d"  # Cinza
     }
     status_color = status_colors.get(status, "#6c757d")
-    
+
     # **Layout organizado com colunas**
     col1, col2 = st.columns([2, 3])
     
     with col1:
-        st.subheader(hu_data['Título'])
-        st.markdown(f"📂 **Projeto:** {hu_data.get('Projeto', 'Não informado')}")
-        st.markdown(f"🔗 [Link Confluence]({hu_data['Link']})")
-        st.markdown(f"📝 [Link para Aprovação](https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']})")
-    
-    with col2:
-        st.markdown("### 📌 Status Atual")
+        # **Informações da HU**
+        st.subheader("📄 Detalhes da HU")
         st.markdown(
             f"""
-            <div style='background-color:#f4f4f4; padding:10px; border-radius:10px; text-align:center; font-size:18px; font-weight:bold; border: 2px solid {status_color}; color: {status_color};'>
-                {status}
+            <div style='background-color:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;'>
+                <p style='font-size:18px; font-weight:bold;'>{hu_data['Título']}</p>
+                <p style='font-size:16px;'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
+                <p style='font-size:16px;'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank">Acessar</a></p>
+                <p style='font-size:16px;'>📝 <strong>Link para Aprovação:</strong> <a href="https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']}" target="_blank">Aprovar</a></p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    with col2:
+        # **Status e Votos**
+        st.subheader("📊 Status e Votos")
+        st.markdown(
+            f"""
+            <div style='background-color:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;'>
+                <p style='font-size:18px; font-weight:bold;'>📌 Status Atual</p>
+                <div style='background-color:{status_color}; padding:10px; border-radius:8px; text-align:center; font-size:18px; font-weight:bold; color:white;'>
+                    {status}
+                </div>
+                <br>
+                <div style='display:flex; justify-content:space-between;'>
+                    <div style='text-align:center;'>
+                        <p style='font-size:16px;'>✔️ Aprovados</p>
+                        <p style='font-size:24px; font-weight:bold;'>{approved_count}</p>
+                    </div>
+                    <div style='text-align:center;'>
+                        <p style='font-size:16px;'>❌ Reprovados</p>
+                        <p style='font-size:24px; font-weight:bold;'>{rejected_count}</p>
+                    </div>
+                    <div style='text-align:center;'>
+                        <p style='font-size:16px;'>🔧 Ajustes Solicitados</p>
+                        <p style='font-size:24px; font-weight:bold;'>{adjustment_count}</p>
+                    </div>
+                </div>
             </div>
             """,
             unsafe_allow_html=True
         )
         
+        # **Stakeholders e Justificativas**
         st.markdown("---")
-        st.metric("✔️ Aprovados", approved_count)
-        st.metric("❌ Reprovados", rejected_count)
-        st.metric("🔧 Ajustes Solicitados", adjustment_count)
-        
-        st.markdown(f"**Stakeholders:** {stakeholders}")
-        st.markdown(f"**Justificativas:** {justifications}")
+        st.subheader("👥 Stakeholders e Justificativas")
+        st.markdown(
+            f"""
+            <div style='background-color:#f8f9fa; padding:20px; border-radius:10px; border: 1px solid #ddd;'>
+                <p style='font-size:16px;'><strong>Stakeholders:</strong> {stakeholders}</p>
+                <p style='font-size:16px;'><strong>Justificativas:</strong></p>
+                <div style='background-color:#ffffff; padding:10px; border-radius:8px; border: 1px solid #ddd;'>
+                    <p style='font-size:14px;'>{justifications}</p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
