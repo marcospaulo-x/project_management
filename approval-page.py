@@ -87,6 +87,14 @@ if hu_id:
                     else:
                         # Adiciona uma nova linha com o voto do stakeholder
                         sheet.append_row([hu["Projeto"], hu["ID_HU"], hu["Título"], st.session_state.decisao, nome, observacao, hu["Link"], hu["Link de Aprovação"]])
+                        
+                        # Remove a linha inicial "Pendente" (se existir)
+                        rows = sheet.get_all_records()
+                        for i, row in enumerate(rows):
+                            if row["ID_HU"] == hu_id and row["Status"] == "Pendente":
+                                sheet.delete_rows(i + 2)  # +2 porque a planilha começa na linha 1 e a primeira linha é o cabeçalho
+                                break
+                        
                         st.success("✅ Resposta registrada com sucesso!")
                         del st.session_state.decisao  # Limpa a decisão após o envio
 
