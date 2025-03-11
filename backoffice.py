@@ -84,7 +84,14 @@ with st.form(key="new_hu_form"):
             selected_hu = new_id  # Seleciona automaticamente a HU cadastrada
 
 # Dropdown para selecionar a HU
-selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].drop_duplicates().tolist(), index=0 if "selected_hu" not in locals() else list(hus["ID_HU"]).index(selected_hu))
+hu_list = [""] + hus["ID_HU"].drop_duplicates().tolist()  # Lista de HUs disponíveis
+default_index = 0  # Índice padrão (primeiro item, que é vazio)
+
+# Verifica se a HU cadastrada está na lista e define o índice correspondente
+if "selected_hu" in locals() and selected_hu in hu_list:
+    default_index = hu_list.index(selected_hu)
+
+selected_hu = st.selectbox("Selecione uma História de Usuário:", hu_list, index=default_index)
 
 # Exibir detalhes da HU selecionada
 if selected_hu and selected_hu != "":
