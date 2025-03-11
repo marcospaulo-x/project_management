@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import datetime
+import matplotlib.pyplot as plt
 
 # Configuração da página
 st.set_page_config(page_title="Backoffice de Aprovação de HUs", layout="centered")
@@ -71,7 +73,9 @@ with st.form(key="new_hu_form"):
             st.error("⚠️ ID da HU já existe. Escolha um ID único.")
         else:
             approval_link = f"https://aprovacao-de-hus.streamlit.app/?id={new_id}"
-            sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link, approval_link])
+            creation_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Data e hora atuais
+            responsible = "Marcos Paulo"  # Responsável fixo
+            sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link, approval_link, creation_date, responsible])
             st.success(f"{new_id} cadastrada com sucesso!")
             st.cache_data.clear()
 
@@ -84,88 +88,84 @@ selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["I
 # Exibir detalhes da HU selecionada
 if selected_hu and selected_hu != "":
     hus = load_hus()
-    hu_data = hus[hus["ID_HU"] == selected_hu].iloc[0]
+    hu_data = hus[hus["ID_HU"] == selected_hu]
     
-    status = get_majority_status(hus, selected_hu)
-    approved_count, rejected_count, adjustment_count = get_vote_counts(hus, selected_hu)
-    stakeholders = get_stakeholders_and_justifications(hus, selected_hu)
-    
-    status_colors = {
-        "Aprovado": "#28a745",
-        "Reprovado": "#dc3545",
-        "Ajuste Solicitado": "#ffc107",
-        "Pendente": "#6c757d"
-    }
-    status_color = status_colors.get(status, "#6c757d")
-
-    # Layout em grid com cards
-    col1, col2 = st.columns(2)  # Duas colunas para os cards superiores
-
-    with col1:
-        # Card de Detalhes da HU
-        st.markdown(
-            f"""
-            <div style='background-color:#2e2e2e; padding:20px; border-radius:10px; border: 1px solid #444; color: white;'>
-                <p style='font-size:18px; font-weight:bold;'>📄 Detalhes da HU</p>
-                <p style='font-size:16px;'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
-                <p style='font-size:16px;'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank" style='color: #1e90ff;'>Acessar</a></p>
-                <p style='font-size:16px;'>📝 <strong>Link para Aprovação:</strong> <a href="https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']}" target="_blank" style='color: #1e90ff;'>Aprovar</a></p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    with col2:
-        # Card de Status e Votos
-        st.markdown(
-            f"""
-            <div style='background-color:#2e2e2e; padding:20px; border-radius:10px; border: 1px solid #444; color: white;'>
-                <p style='font-size:18px; font-weight:bold;'>📊 Status e Votos</p>
-                <div style='background-color:{status_color}; padding:10px; border-radius:8px; text-align:center; font-size:18px; font-weight:bold; color:white;'>
-                    {status}
-                </div>
-                <br>
-                <div style='display:flex; justify-content:space-between;'>
-                    <div style='text-align:center;'>
-                        <p style='font-size:16px;'>✔️ Aprovados</p>
-                        <p style='font-size:24px; font-weight:bold;'>{approved_count}</p>
-                    </div>
-                    <div style='text-align:center;'>
-                        <p style='font-size:16px;'>❌ Reprovados</p>
-                        <p style='font-size:24px; font-weight:bold;'>{rejected_count}</p>
-                    </div>
-                    <div style='text-align:center;'>
-                        <p style='font-size:16px;'>🔧 Ajustes Solicitados</p>
-                        <p style='font-size:24px; font-weight:bold;'>{adjustment_count}</p>
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-    # Seção de Stakeholders e Justificativas
-    if not stakeholders.empty:  # Exibe a seção apenas se houver stakeholders
-        st.markdown(
-            f"""
-            <div style='background-color:#2e2e2e; padding:20px; border-radius:10px; border: 1px solid #444; color: white; margin-top:20px;'>
-                <p style='font-size:18px; font-weight:bold;'>👥 Stakeholders e Justificativas</p>
-            """,
-            unsafe_allow_html=True
-        )
+    if not hu_data.empty:
+        hu_data = hu_data.iloc[0]  # Obtém a primeira linha correspondente
         
-        # Exibir stakeholders em uma lista compacta
-        for _, row in stakeholders.iterrows():
-            emoji = get_status_emoji(row['Status'])
-            if emoji:  # Exibe o card apenas se houver um emoji válido
-                st.markdown(
-                    f"""
-                    <div style='background-color:#3e3e3e; padding:15px; border-radius:8px; border: 1px solid #555; margin-top:10px;'>
-                        <p style='font-size:16px; font-weight:bold;'>{row['Stakeholder Aprovador']} {emoji}</p>
-                        {f"<p style='font-size:14px;'>{row['Observação']}</p>" if pd.notna(row['Observação']) else ""}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+        status = get_majority_status(hus, selected_hu)
+        approved_count, rejected_count, adjustment_count = get_vote_counts(hus, selected_hu)
+        stakeholders = get_stakeholders_and_justifications(hus, selected_hu)
         
-        st.markdown("</div>", unsafe_allow_html=True)  # Fechar o container
+        status_colors = {
+            "Aprovado": "#28a745",
+            "Reprovado": "#dc3545",
+            "Ajuste Solicitado": "#ffc107",
+            "Pendente": "#6c757d"
+        }
+        status_color = status_colors.get(status, "#6c757d")
+
+        # Layout em grid com cards
+        col1, col2 = st.columns(2)  # Duas colunas para os cards superiores
+
+        with col1:
+            # Card de Detalhes da HU
+            st.markdown(
+                f"""
+                <div style='background-color:#2e2e2e; padding:14px; border-radius:10px; border: 1px solid #444; color: white;'>
+                    <p style='font-size:18px; font-weight:bold;'>📄 Detalhes da HU</p>
+                    <p style='font-size:16px;'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
+                    <p style='font-size:16px;'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank" style='color: #1e90ff;'>Acessar</a></p>
+                    <p style='font-size:16px;'>📝 <strong>Link para Aprovação:</strong> <a href="https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']}" target="_blank" style='color: #1e90ff;'>Aprovar</a></p>
+                    <p style='font-size:16px;'>👤 <strong>Responsável:</strong> {hu_data.get('Responsável', 'Marcos Paulo')}</p>
+                    <p style='font-size:16px;'>📅 <strong>Data de Criação:</strong> {hu_data.get('Data de Criação', 'Não informada')}</p>                          
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with col2:
+            # Card de Status e Votos
+            st.markdown(
+                f"""
+                <div style='background-color:#2e2e2e; padding:13px; border-radius:10px; border: 1px solid #444; color: white;'>
+                    <p style='font-size:18px; font-weight:bold;'>📊 Status e Votos</p>
+                    <div style='padding:15px; border-radius:10px; text-align:center; 
+                                font-size:22px; font-weight:bold; background-color:{status_color}; color:white;'>
+                        {status}
+                    </div>
+                    <br>
+                    <div style='display:flex; justify-content:space-between;'>
+                        <div style='text-align:center;'>
+                            <p style='font-size:16px;'>✔️ Aprovados</p>
+                            <p style='font-size:24px; font-weight:bold;'>{approved_count}</p>
+                        </div>
+                        <div style='text-align:center;'>
+                            <p style='font-size:16px;'>❌ Reprovados</p>
+                            <p style='font-size:24px; font-weight:bold;'>{rejected_count}</p>
+                        </div>
+                        <div style='text-align:center;'>
+                            <p style='font-size:16px;'>🔧 Ajustes Solicitados</p>
+                            <p style='font-size:24px; font-weight:bold;'>{adjustment_count}</p>
+                        </div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        
+        # Adiciona espaçamento antes da seção
+        st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        
+        # Seção de Stakeholders e Justificativas
+        if not stakeholders.empty:  # Exibe a seção apenas se houver stakeholders
+            with st.expander("🔍 Ver Decisão por Stakeholder", expanded=False):
+                for _, row in stakeholders.iterrows():
+                    emoji = get_status_emoji(row['Status'])
+                    if emoji:  # Exibe o card apenas se houver um emoji válido
+                        st.markdown(f"**{emoji} {row['Stakeholder Aprovador']}** - {row['Status']}")
+                        if pd.notna(row["Observação"]):
+                            st.write(f"📝 {row['Observação']}")
+    else:
+        st.error("⚠️ História de Usuário não encontrada.")
