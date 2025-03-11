@@ -118,15 +118,24 @@ if selected_hu and selected_hu != "":
 
         with col1:
             # Card de Detalhes da HU
+            creation_date = hu_data.get('Data de Criação', 'Não informada')
+            if creation_date != 'Não informada':
+                # Converte a string da data para um objeto datetime
+                creation_date_obj = datetime.strptime(creation_date, "%Y-%m-%d %H:%M:%S")
+                # Formata a data no estilo DD/MM/YYYY
+                formatted_date = creation_date_obj.strftime("%d/%m/%Y")
+            else:
+                formatted_date = creation_date
+
             st.markdown(
                 f"""
-                <div style='background-color:#2e2e2e; padding:14px; border-radius:10px; border: 1px solid #444; color: white;'>
+                <div style='background-color:#2e2e2e; padding:15px; border-radius:10px; border: 1px solid #444; color: white;'>
                     <p style='font-size:18px; font-weight:bold;'>📄 Detalhes da HU</p>
                     <p style='font-size:16px;'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
                     <p style='font-size:16px;'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank" style='color: #1e90ff;'>Acessar</a></p>
                     <p style='font-size:16px;'>📝 <strong>Link para Aprovação:</strong> <a href="https://aprovacao-de-hus.streamlit.app/?id={hu_data['ID_HU']}" target="_blank" style='color: #1e90ff;'>Aprovar</a></p>
                     <p style='font-size:16px;'>👤 <strong>Responsável:</strong> {hu_data.get('Responsável', 'Marcos Paulo')}</p>
-                    <p style='font-size:16px;'>📅 <strong>Data de Criação:</strong> {hu_data.get('Data de Criação', 'Não informada')}</p>                          
+                    <p style='font-size:16px;'>📅 <strong>Data de Criação:</strong> {formatted_date}</p>                          
                 </div>
                 """,
                 unsafe_allow_html=True
