@@ -56,6 +56,9 @@ def get_status_emoji(status):
 # Título
 st.title("Cadastro e Gerenciamento de Histórias de Usuários")
 
+# Recarregar os dados da planilha
+hus = load_hus()  # Carrega os dados antes de usar a variável "hus"
+
 # Formulário para adicionar nova HU
 st.subheader("Adicionar Nova HU")
 with st.form(key="new_hu_form"):
@@ -77,9 +80,6 @@ with st.form(key="new_hu_form"):
             sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link, approval_link, creation_date, responsible])
             st.success(f"{new_id} cadastrada com sucesso!")
             st.cache_data.clear()
-
-# Recarregar os dados da planilha
-hus = load_hus()
 
 # Dropdown para selecionar a HU
 selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].drop_duplicates().tolist())
