@@ -79,10 +79,12 @@ with st.form(key="new_hu_form"):
             responsible = "Marcos Paulo"  # Responsável fixo
             sheet.append_row([new_project, new_id, new_title, "Pendente", "", "", new_link, approval_link, creation_date, responsible])
             st.success(f"{new_id} cadastrada com sucesso!")
-            st.cache_data.clear()
+            st.cache_data.clear()  # Limpa o cache para recarregar os dados
+            hus = load_hus()  # Recarrega os dados da planilha
+            selected_hu = new_id  # Seleciona automaticamente a HU cadastrada
 
 # Dropdown para selecionar a HU
-selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].drop_duplicates().tolist())
+selected_hu = st.selectbox("Selecione uma História de Usuário:", [""] + hus["ID_HU"].drop_duplicates().tolist(), index=0 if "selected_hu" not in locals() else list(hus["ID_HU"]).index(selected_hu))
 
 # Exibir detalhes da HU selecionada
 if selected_hu and selected_hu != "":
