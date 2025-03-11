@@ -16,7 +16,6 @@ spreadsheet = client.open_by_key(st.secrets["spreadsheet"]["spreadsheet_id"])
 sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # Função para carregar dados
-@st.cache_data(ttl=300)
 def load_hus():
     data = sheet.get_all_records()
     df = pd.DataFrame(data)
@@ -120,16 +119,20 @@ if selected_hu and selected_hu != "":
             # Card de Detalhes da HU
             creation_date = hu_data.get('Data de Criação', 'Não informada')
             if creation_date != 'Não informada':
-                # Converte a string da data para um objeto datetime
-                creation_date_obj = datetime.strptime(creation_date, "%Y-%m-%d %H:%M:%S")
-                # Formata a data no estilo DD/MM/YYYY
-                formatted_date = creation_date_obj.strftime("%d/%m/%Y")
+                try:
+                    # Converte a string da data para um objeto datetime
+                    creation_date_obj = datetime.strptime(creation_date, "%Y-%m-%d %H:%M:%S")
+                    # Formata a data no estilo DD/MM/YYYY
+                    formatted_date = creation_date_obj.strftime("%d/%m/%Y")
+                except ValueError:
+                    # Se a data não estiver no formato esperado, exibe o valor original
+                    formatted_date = creation_date
             else:
                 formatted_date = creation_date
 
             st.markdown(
                 f"""
-                <div style='background-color:#2e2e2e; padding:15px; border-radius:10px; border: 1px solid #444; color: white;'>
+                <div style='background-color:#2e2e2e; padding:14px; border-radius:10px; border: 1px solid #444; color: white;'>
                     <p style='font-size:18px; font-weight:bold;'>📄 Detalhes da HU</p>
                     <p style='font-size:16px;'>📂 <strong>Projeto:</strong> {hu_data.get('Projeto', 'Não informado')}</p>
                     <p style='font-size:16px;'>🔗 <strong>Link Confluence:</strong> <a href="{hu_data['Link']}" target="_blank" style='color: #1e90ff;'>Acessar</a></p>
