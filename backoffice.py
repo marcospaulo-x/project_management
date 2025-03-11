@@ -3,7 +3,6 @@ import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
-import matplotlib.pyplot as plt
 
 # Configuração da página
 st.set_page_config(page_title="Backoffice de Aprovação de HUs", layout="centered")
@@ -157,7 +156,7 @@ if selected_hu and selected_hu != "":
         
         # Adiciona espaçamento antes da seção
         st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-        
+
         # Seção de Stakeholders e Justificativas
         if not stakeholders.empty:  # Exibe a seção apenas se houver stakeholders
             with st.expander("🔍 Ver Decisão por Stakeholder", expanded=False):
